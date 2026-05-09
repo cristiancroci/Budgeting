@@ -1,4 +1,4 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyYIybFFo-mSVygISQFvOd8N7gBEMt9NLhGkpoKRO49IIJquFYoqDuYeSz7NWl1Sqokqw/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx48SC5rxyMwtcBYEuAtIEUTjEdJIJ3zF0ZaAZ8omRPNBu8vcokvw0kuRY1u2T4vmCRYw/exec";
 
 
 let data = {
