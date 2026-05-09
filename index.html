@@ -1,78 +1,119 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<title>Budget Percentuale</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Budget App</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Manifest PWA -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#1a1f36">
+
+  <!-- Icone -->
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-<h1>Budget Percentuale</h1>
+  <div class="container">
 
-<div class="container">
+    <h1>Budget Mensile 💰</h1>
 
-  <div class="left">
+    <!-- CARD BUDGET -->
+    <div class="entry">
+      <div class="entryTitle">Budget mensile</div>
 
-    <div class="card glow">
-      <label>Reddito mensile (€)</label>
-      <input type="number" id="income" placeholder="Es. 2000">
+      <div class="entryRow">
+        <span class="label">Budget totale (€):</span>
+        <input id="budgetInput" type="number" placeholder="1500">
+      </div>
+
+      <div class="entryRow">
+        <span class="label">Mese:</span>
+        <div id="monthSlider" class="monthSlider"></div>
+      </div>
+
+      <div class="entryRow">
+        <span class="label">Anno:</span>
+        <select id="yearSelect">
+          <option>2025</option>
+          <option selected>2026</option>
+          <option>2027</option>
+        </select>
+      </div>
+
+      <button class="btn-crazy" onclick="setBudget()">Imposta budget</button>
     </div>
 
-    <div class="card glow" id="categories">
-      <h2>Categorie</h2>
-
-      <div class="row">
-        <input type="text" class="cat-name" value="Bisogni">
-        <input type="number" class="cat-percent" value="50">
-      </div>
-
-      <div class="row">
-        <input type="text" class="cat-name" value="Desideri">
-        <input type="number" class="cat-percent" value="30">
-      </div>
-
-      <div class="row">
-        <input type="text" class="cat-name" value="Risparmio">
-        <input type="number" class="cat-percent" value="20">
-      </div>
-
-      <p id="sumInfo"></p>
+    <!-- DASHBOARD -->
+    <div class="entry">
+      <div class="entryTitle">Dashboard</div>
+      <div id="dashboardContent"></div>
     </div>
 
-    <button id="calcBtn">Calcola budget</button>
+    <!-- GRAFICO GIORNALIERO -->
+    <div class="entry">
+      <div class="entryTitle">Grafico giornaliero</div>
+      <canvas id="dailyChart" height="200"></canvas>
+    </div>
 
-    <div class="card glow">
-      <h2>Inserisci spesa</h2>
+    <!-- GRAFICO CATEGORIE -->
+    <div class="entry">
+      <div class="entryTitle">Grafico categorie</div>
+      <canvas id="categoryChart" height="200"></canvas>
+    </div>
 
-      <label>Categoria</label>
-      <select id="expenseCat"></select>
+    <!-- AGGIUNGI SPESA -->
+    <div class="entry">
+      <div class="entryTitle">Aggiungi spesa</div>
 
-      <label>Nome spesa</label>
-      <input type="text" id="expenseName">
+      <input id="titleInput" placeholder="Titolo">
+      <input id="amountInput" type="number" placeholder="Importo (€)">
+      
+      <select id="categoryInput">
+        <option disabled selected>Categoria</option>
 
-      <label>Importo (€)</label>
-      <input type="number" id="expenseAmount">
+        <option>Casa</option>
+        <option>Spesa</option>
+        <option>Auto</option>
+        <option>Bollette</option>
+        <option>Salute</option>
 
-      <button id="addExpense">Aggiungi spesa</button>
+        <option>Ristoranti</option>
+        <option>Tempo libero</option>
+        <option>Shopping</option>
+        <option>Hobby</option>
+
+        <option>Risparmio</option>
+        <option>Investimenti</option>
+      </select>
+
+      <input id="dateInput" type="date">
+      <textarea id="noteInput" placeholder="Note"></textarea>
+
+      <button class="btn-save" onclick="addExpense()">Aggiungi</button>
+    </div>
+
+    <!-- STORICO -->
+    <div class="entry">
+      <div class="entryTitle">Storico</div>
+      <div id="historyList"></div>
     </div>
 
   </div>
 
-  <div class="right">
-
-    <div class="card glow" id="results"></div>
-
-    <div class="card glow">
-      <h2>Distribuzione Budget</h2>
-      <canvas id="pieChart"></canvas>
-    </div>
-
-  </div>
-
-</div>
-
-<script src="script.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js');
+      });
+    }
+  </script>
+  <script src="app.js"></script>
 </body>
 </html>
