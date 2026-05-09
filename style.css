@@ -33,11 +33,10 @@ h1 {
 }
 
 .statusIndicator.ok { color: #00cc66; }
-.statusIndicator.saving { color: #ffcc00; }
 .statusIndicator.err { color: #ff3333; }
 
-/* LAMPEGGIO SALVATAGGIO */
 .statusIndicator.saving {
+  color: #ffcc00;
   animation: savingBlink 1.2s infinite ease-in-out;
 }
 
