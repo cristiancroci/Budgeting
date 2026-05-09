@@ -1,5 +1,5 @@
 body {
-  background: #f2f7fb; /* bianco ghiaccio */
+  background: #f2f7fb;
   color: #000;
   font-family: Arial, sans-serif;
   padding: 20px;
@@ -18,7 +18,7 @@ h1 {
   margin-bottom: 10px;
 }
 
-/* CARD SCURE (identiche al Vault) */
+/* CARD SCURE */
 .entry {
   background: #1a1f36;
   padding: 14px;
@@ -51,7 +51,7 @@ h1 {
   margin-bottom: 2px;
 }
 
-/* INPUT / SELECT / TEXTAREA (come Vault) */
+/* INPUT */
 input, select, textarea {
   width: 100%;
   padding: 10px;
@@ -63,7 +63,7 @@ input, select, textarea {
   color: #000;
 }
 
-/* BOTTONI LUMINOSI */
+/* BOTTONI */
 button {
   width: 100%;
   padding: 12px;
