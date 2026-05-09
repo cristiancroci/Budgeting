@@ -7,6 +7,7 @@ let data = {
   expenses: []
 };
 
+
 let editIndex = null;
 
 const months = [
