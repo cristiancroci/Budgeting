@@ -23,6 +23,26 @@ window.onload = () => {
   loadData();
 };
 
+/* SEMAFORO */
+function setStatusSaving() {
+  const s = document.getElementById("saveStatus");
+  s.className = "statusIndicator saving";
+  s.textContent = "🟡 Salvataggio...";
+}
+
+function setStatusOK() {
+  const s = document.getElementById("saveStatus");
+  s.className = "statusIndicator ok";
+  s.textContent = "🟢 Salvato";
+}
+
+function setStatusError() {
+  const s = document.getElementById("saveStatus");
+  s.className = "statusIndicator err";
+  s.textContent = "🔴 Errore";
+}
+
+/* INIT */
 function initYearSelect() {
   const yearSelect = document.getElementById("yearSelect");
   yearSelect.value = data.year;
@@ -50,6 +70,7 @@ function buildMonthSlider() {
   });
 }
 
+/* BUDGET */
 function setBudget() {
   const val = parseFloat(document.getElementById("budgetInput").value);
   if (!isNaN(val) && val >= 0) {
@@ -60,6 +81,7 @@ function setBudget() {
   }
 }
 
+/* AGGIUNTA SPESA */
 function addExpense() {
   const title = document.getElementById("titleInput").value.trim();
   const amount = parseFloat(document.getElementById("amountInput").value);
@@ -76,6 +98,7 @@ function addExpense() {
   refreshAll();
 }
 
+/* MODIFICA */
 function startEdit(index) {
   editIndex = index;
   const e = data.expenses[index];
@@ -114,6 +137,20 @@ function cancelEdit() {
   clearForm();
 }
 
+/* ELIMINA */
+function deleteExpense(index) {
+  const e = data.expenses[index];
+
+  if (!confirm(`Vuoi eliminare questa spesa?\n\n${e.date} - ${e.title} (€${e.amount})`)) {
+    return;
+  }
+
+  data.expenses.splice(index, 1);
+  saveData();
+  refreshAll();
+}
+
+/* FORM RESET */
 function clearForm() {
   document.getElementById("titleInput").value = "";
   document.getElementById("amountInput").value = "";
@@ -127,25 +164,13 @@ function clearForm() {
   document.getElementById("cancelEditBtn").style.display = "none";
 }
 
-function deleteExpense(index) {
-  const e = data.expenses[index];
-
-  if (!confirm(`Vuoi eliminare questa spesa?\n\n${e.date} - ${e.title} (€${e.amount})`)) {
-    return;
-  }
-
-  data.expenses.splice(index, 1);
-  saveData();
-  refreshAll();
-}
-
+/* DASHBOARD */
 function refreshAll() {
   updateDashboard();
   drawCharts();
   updateHistory();
 }
 
-/* 50/30/20 */
 function updateDashboard() {
   const dash = document.getElementById("dashboardContent");
   const budget = data.budget || 0;
@@ -246,7 +271,7 @@ function drawCharts() {
   });
 }
 
-/* STORICO — CON ICONA + CONFERMA + BOTTONI CANGIANTI */
+/* STORICO */
 function updateHistory() {
   const list = document.getElementById("historyList");
   list.innerHTML = "";
@@ -278,8 +303,10 @@ function updateHistory() {
   });
 }
 
-/* SYNC CON DRIVE (Apps Script) */
+/* SYNC CON DRIVE */
 function loadData() {
+  setStatusSaving();
+
   fetch(SCRIPT_URL + '?action=get')
     .then(r => r.json())
     .then(res => {
@@ -290,16 +317,28 @@ function loadData() {
       }
       buildMonthSlider();
       refreshAll();
+      setStatusOK();
     })
     .catch(() => {
       refreshAll();
+      setStatusError();
     });
 }
 
 function saveData() {
+  setStatusSaving();
+
   fetch(SCRIPT_URL + '?action=save', {
     method: 'POST',
-    contentType: 'application/json',
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify(data)
-  }).catch(() => {});
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.status === "ok") setStatusOK();
+    else setStatusError();
+  })
+  .catch(() => setStatusError());
 }
