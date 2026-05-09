@@ -128,6 +128,12 @@ function clearForm() {
 }
 
 function deleteExpense(index) {
+  const e = data.expenses[index];
+
+  if (!confirm(`Vuoi eliminare questa spesa?\n\n${e.date} - ${e.title} (€${e.amount})`)) {
+    return;
+  }
+
   data.expenses.splice(index, 1);
   saveData();
   refreshAll();
@@ -240,7 +246,7 @@ function drawCharts() {
   });
 }
 
-/* STORICO — CON BOTTONI MODIFICA + ELIMINA */
+/* STORICO — CON ICONA + CONFERMA + BOTTONI CANGIANTI */
 function updateHistory() {
   const list = document.getElementById("historyList");
   list.innerHTML = "";
@@ -263,8 +269,8 @@ function updateHistory() {
     div.innerHTML = `
       ${e.date} - ${e.title} (€${e.amount.toFixed(2)}) [${e.category}]
       <div class="historyButtons">
-        <button class="btn-orange" onclick="startEdit(${e.index})">Modifica</button>
-        <button class="btn-red" onclick="deleteExpense(${e.index})">Elimina</button>
+        <button class="btn-orange" onclick="startEdit(${e.index})">✏️ Modifica</button>
+        <button class="btn-red" onclick="deleteExpense(${e.index})">🗑️ Elimina</button>
       </div>
     `;
 
@@ -272,7 +278,7 @@ function updateHistory() {
   });
 }
 
-/* SYNC CON APPS SCRIPT */
+/* SYNC CON DRIVE (Apps Script) */
 function loadData() {
   fetch(SCRIPT_URL + '?action=get')
     .then(r => r.json())
