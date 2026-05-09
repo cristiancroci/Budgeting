@@ -156,3 +156,28 @@ button {
   gap: 6px;
   margin-top: 4px;
 }
+/* SEMAFORO SALVATAGGIO */
+.statusIndicator {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: #1a1f36;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  z-index: 9999;
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  transition: background 0.3s, color 0.3s;
+}
+
+.statusIndicator.ok {
+  color: #00cc66;
+}
+
+.statusIndicator.saving {
+  color: #ffcc00;
+}
+
+.statusIndicator.err {
+  color: #ff3333;
+}
