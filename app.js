@@ -7,6 +7,8 @@ let data = {
   expenses: []
 };
 
+let editIndex = null;
+
 const months = [
   "Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno",
   "Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"
@@ -67,20 +69,66 @@ function addExpense() {
 
   if (!title || isNaN(amount) || !category || !date) return;
 
-  data.expenses.push({
-    title,
-    amount,
-    category,
-    date,
-    note
-  });
+  data.expenses.push({ title, amount, category, date, note });
 
+  clearForm();
+  saveData();
+  refreshAll();
+}
+
+function startEdit(index) {
+  editIndex = index;
+  const e = data.expenses[index];
+
+  document.getElementById("titleInput").value = e.title;
+  document.getElementById("amountInput").value = e.amount;
+  document.getElementById("categoryInput").value = e.category;
+  document.getElementById("dateInput").value = e.date;
+  document.getElementById("noteInput").value = e.note;
+
+  document.getElementById("formTitle").textContent = "Modifica spesa";
+  document.getElementById("saveBtn").style.display = "none";
+  document.getElementById("editBtn").style.display = "block";
+  document.getElementById("cancelEditBtn").style.display = "block";
+}
+
+function saveEdit() {
+  if (editIndex === null) return;
+
+  const title = document.getElementById("titleInput").value.trim();
+  const amount = parseFloat(document.getElementById("amountInput").value);
+  const category = document.getElementById("categoryInput").value;
+  const date = document.getElementById("dateInput").value;
+  const note = document.getElementById("noteInput").value.trim();
+
+  data.expenses[editIndex] = { title, amount, category, date, note };
+
+  editIndex = null;
+  clearForm();
+  saveData();
+  refreshAll();
+}
+
+function cancelEdit() {
+  editIndex = null;
+  clearForm();
+}
+
+function clearForm() {
   document.getElementById("titleInput").value = "";
   document.getElementById("amountInput").value = "";
   document.getElementById("categoryInput").selectedIndex = 0;
   document.getElementById("dateInput").value = "";
   document.getElementById("noteInput").value = "";
 
+  document.getElementById("formTitle").textContent = "Aggiungi spesa";
+  document.getElementById("saveBtn").style.display = "block";
+  document.getElementById("editBtn").style.display = "none";
+  document.getElementById("cancelEditBtn").style.display = "none";
+}
+
+function deleteExpense(index) {
+  data.expenses.splice(index, 1);
   saveData();
   refreshAll();
 }
@@ -186,56 +234,4 @@ function drawCharts() {
       plugins: { legend: { display: false } },
       scales: {
         x: { ticks: { color: "#ffffff" } },
-        y: { ticks: { color: "#ffffff" } }
-      }
-    }
-  });
-}
-
-/* STORICO */
-function updateHistory() {
-  const list = document.getElementById("historyList");
-  list.innerHTML = "";
-
-  const currentMonthIndex = months.indexOf(data.month);
-  const currentYear = data.year;
-
-  const filtered = data.expenses.filter(e => {
-    const d = new Date(e.date);
-    return d.getMonth() === currentMonthIndex && d.getFullYear() === currentYear;
-  });
-
-  filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-  filtered.forEach(e => {
-    const div = document.createElement("div");
-    div.textContent = `${e.date} - ${e.title} (€${e.amount.toFixed(2)}) [${e.category}]`;
-    list.appendChild(div);
-  });
-}
-
-/* SYNC CON APPS SCRIPT */
-function loadData() {
-  fetch(SCRIPT_URL + '?action=get')
-    .then(r => r.json())
-    .then(res => {
-      if (res && res.budget !== undefined) {
-        data = res;
-        document.getElementById("budgetInput").value = data.budget || "";
-        document.getElementById("yearSelect").value = data.year || 2026;
-      }
-      buildMonthSlider();
-      refreshAll();
-    })
-    .catch(() => {
-      refreshAll();
-    });
-}
-
-function saveData() {
-  fetch(SCRIPT_URL + '?action=save', {
-    method: 'POST',
-    contentType: 'application/json',
-    body: JSON.stringify(data)
-  }).catch(() => {});
-}
+        y: { ticks: {
