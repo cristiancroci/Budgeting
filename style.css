@@ -1,110 +1,126 @@
 body {
-  font-family: -apple-system, system-ui;
-  margin: 0;
+  background: #f2f7fb; /* bianco ghiaccio */
+  color: #000;
+  font-family: Arial, sans-serif;
   padding: 20px;
-  background: #f7faff;
-  color: #111;
+  display: flex;
+  justify-content: center;
 }
-
-h1 { text-align: center; margin-bottom: 20px; }
 
 .container {
-  display: flex;
-  gap: 20px;
-}
-
-.left, .right {
-  flex: 1;
-}
-
-@media(max-width: 900px) {
-  .container { flex-direction: column; }
-}
-
-.card {
-  background: #000;
-  color: #fff;
-  border-radius: 18px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-  border: 2px solid transparent;
-  position: relative;
-}
-
-.card.glow::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 18px;
-  padding: 2px;
-  background: linear-gradient(135deg, #00c6ff, #00ff9d);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
-}
-
-label { font-weight: 600; display: block; margin-bottom: 6px; }
-
-input, select {
   width: 100%;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid #444;
-  margin-bottom: 12px;
-  font-size: 16px;
-  background: #111;
-  color: #fff;
+  max-width: 380px;
+  margin: 0 auto;
 }
 
-button {
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #00c6ff, #00ff9d);
-  color: #000;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-.row {
-  display: flex;
-  gap: 10px;
+h1 {
+  text-align: center;
   margin-bottom: 10px;
 }
 
-.row input { width: 50%; }
-
-.bar {
-  height: 10px;
-  background: #333;
-  border-radius: 999px;
-  overflow: hidden;
-  margin-top: 6px;
+/* CARD SCURE (identiche al Vault) */
+.entry {
+  background: #1a1f36;
+  padding: 14px;
+  border-radius: 10px;
+  width: 100%;
+  margin: 12px auto;
+  color: white;
+  box-sizing: border-box;
 }
 
-.bar-fill {
-  height: 100%;
-  background: linear-gradient(135deg, #00c6ff, #00ff9d);
-  width: 0%;
-  transition: width .3s;
+.entryTitle {
+  display: inline-block;
+  background: linear-gradient(90deg, #4da6ff, #0066ff, #4da6ff);
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 10px;
 }
 
-.expense-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 0;
-  border-bottom: 1px solid #333;
-}
-
-.expense-item button {
-  width: auto;
-  padding: 4px 10px;
-  background: #ff3b30;
-  color: #fff;
-  border-radius: 8px;
+.entryRow {
+  margin: 6px 0;
   font-size: 14px;
+}
+
+.label {
+  font-weight: bold;
+  color: #9ecbff;
+  display: block;
+  margin-bottom: 2px;
+}
+
+/* INPUT / SELECT / TEXTAREA (come Vault) */
+input, select, textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 6px 0;
+  border-radius: 6px;
+  border: none;
+  box-sizing: border-box;
+  background: #ffffff;
+  color: #000;
+}
+
+/* BOTTONI LUMINOSI */
+button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.btn-crazy {
+  background: linear-gradient(90deg, #ff00ff, #00ffff, #ffff00, #ff00ff);
+  background-size: 400% 400%;
+  animation: crazyColor 2s infinite linear;
+}
+
+@keyframes crazyColor {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.btn-save {
+  background: linear-gradient(90deg, #66ff99, #00cc66, #66ff99);
+}
+
+/* SLIDER MESE */
+.monthSlider {
+  display: flex;
+  overflow-x: auto;
+  gap: 8px;
+  padding: 6px 0;
+}
+
+.monthSlider div {
+  padding: 6px 10px;
+  background: #2a2f45;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.monthSlider .active {
+  background: #4da6ff;
+  font-weight: bold;
+}
+
+/* STORICO */
+#historyList {
+  font-size: 13px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+#historyList div {
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
