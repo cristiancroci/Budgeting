@@ -17,12 +17,8 @@
 </head>
 <body>
 
-
   <!-- SEMAFORO -->
-  <div id="saveStatus" class="statusIndicator">🟢 Salvato</div>
-
-  <div class="container">
-
+  <div id="saveStatus" class="statusIndicator ok">🟢 Salvato</div>
 
   <div class="container">
 
@@ -101,8 +97,8 @@
       <textarea id="noteInput" placeholder="Note"></textarea>
 
       <button class="btn-save" id="saveBtn" onclick="addExpense()">Aggiungi</button>
-      <button class="btn-orange" id="editBtn" style="display:none;" onclick="saveEdit()">Salva modifica</button>
-      <button class="btn-red" id="cancelEditBtn" style="display:none;" onclick="cancelEdit()">Annulla</button>
+      <button class="btn-orange" id="editBtn" style="display:none;" onclick="saveEdit()">✏️ Salva modifica</button>
+      <button class="btn-red" id="cancelEditBtn" style="display:none;" onclick="cancelEdit()">❌ Annulla</button>
     </div>
 
     <!-- STORICO -->
