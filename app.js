@@ -29,18 +29,21 @@ window.addEventListener("beforeunload", function (e) {
 /* SEMAFORO */
 function setStatusSaving() {
   const s = document.getElementById("saveStatus");
+  if (!s) return;
   s.className = "statusIndicator saving";
   s.textContent = "🟡 Salvataggio...";
 }
 
 function setStatusOK() {
   const s = document.getElementById("saveStatus");
+  if (!s) return;
   s.className = "statusIndicator ok";
   s.textContent = "🟢 Salvato";
 }
 
 function setStatusError() {
   const s = document.getElementById("saveStatus");
+  if (!s) return;
   s.className = "statusIndicator err";
   s.textContent = "🔴 Errore";
 }
