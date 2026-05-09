@@ -1,0 +1,241 @@
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhFGZbR2dkVcUL3tvw8m_NRxnAhDSjzeFg6soZTKlSgZDMrwkZztPtmOYHWDSByUXGew/exec";
+
+let data = {
+  budget: 0,
+  month: "Gennaio",
+  year: 2026,
+  expenses: []
+};
+
+const months = [
+  "Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno",
+  "Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"
+];
+
+let dailyChart = null;
+let categoryChart = null;
+
+window.onload = () => {
+  buildMonthSlider();
+  initYearSelect();
+  loadData();
+};
+
+function initYearSelect() {
+  const yearSelect = document.getElementById("yearSelect");
+  yearSelect.value = data.year;
+  yearSelect.onchange = () => {
+    data.year = parseInt(yearSelect.value);
+    saveData();
+    refreshAll();
+  };
+}
+
+function buildMonthSlider() {
+  const slider = document.getElementById("monthSlider");
+  slider.innerHTML = "";
+  months.forEach(m => {
+    const div = document.createElement("div");
+    div.textContent = m;
+    if (m === data.month) div.classList.add("active");
+    div.onclick = () => {
+      data.month = m;
+      buildMonthSlider();
+      refreshAll();
+      saveData();
+    };
+    slider.appendChild(div);
+  });
+}
+
+function setBudget() {
+  const val = parseFloat(document.getElementById("budgetInput").value);
+  if (!isNaN(val) && val >= 0) {
+    data.budget = val;
+    data.year = parseInt(document.getElementById("yearSelect").value);
+    saveData();
+    refreshAll();
+  }
+}
+
+function addExpense() {
+  const title = document.getElementById("titleInput").value.trim();
+  const amount = parseFloat(document.getElementById("amountInput").value);
+  const category = document.getElementById("categoryInput").value;
+  const date = document.getElementById("dateInput").value;
+  const note = document.getElementById("noteInput").value.trim();
+
+  if (!title || isNaN(amount) || !category || !date) return;
+
+  data.expenses.push({
+    title,
+    amount,
+    category,
+    date,
+    note
+  });
+
+  document.getElementById("titleInput").value = "";
+  document.getElementById("amountInput").value = "";
+  document.getElementById("categoryInput").selectedIndex = 0;
+  document.getElementById("dateInput").value = "";
+  document.getElementById("noteInput").value = "";
+
+  saveData();
+  refreshAll();
+}
+
+function refreshAll() {
+  updateDashboard();
+  drawCharts();
+  updateHistory();
+}
+
+/* 50/30/20 */
+function updateDashboard() {
+  const dash = document.getElementById("dashboardContent");
+  const budget = data.budget || 0;
+
+  const necessity = ["Casa","Spesa","Auto","Bollette","Salute"];
+  const desires = ["Ristoranti","Tempo libero","Shopping","Hobby"];
+  const savings = ["Risparmio","Investimenti"];
+
+  let totalNec = 0, totalDes = 0, totalSav = 0, totalAll = 0;
+
+  const currentMonthIndex = months.indexOf(data.month);
+  const currentYear = data.year;
+
+  data.expenses.forEach(e => {
+    const d = new Date(e.date);
+    if (d.getMonth() === currentMonthIndex && d.getFullYear() === currentYear) {
+      totalAll += e.amount;
+      if (necessity.includes(e.category)) totalNec += e.amount;
+      if (desires.includes(e.category)) totalDes += e.amount;
+      if (savings.includes(e.category)) totalSav += e.amount;
+    }
+  });
+
+  const bNec = budget * 0.5;
+  const bDes = budget * 0.3;
+  const bSav = budget * 0.2;
+
+  dash.innerHTML = `
+    <div class="entryRow"><span class="label">Mese:</span> ${data.month} ${data.year}</div>
+    <div class="entryRow"><span class="label">Budget:</span> €${budget.toFixed(2)}</div>
+    <div class="entryRow"><span class="label">Spesa totale:</span> €${totalAll.toFixed(2)}</div>
+    <div class="entryRow"><span class="label">Rimasto:</span> €${(budget - totalAll).toFixed(2)}</div>
+    <div class="entryRow"><span class="label">Necessità (50%):</span> €${totalNec.toFixed(2)} / €${bNec.toFixed(2)}</div>
+    <div class="entryRow"><span class="label">Desideri (30%):</span> €${totalDes.toFixed(2)} / €${bDes.toFixed(2)}</div>
+    <div class="entryRow"><span class="label">Risparmio (20%):</span> €${totalSav.toFixed(2)} / €${bSav.toFixed(2)}</div>
+  `;
+}
+
+/* GRAFICI */
+function drawCharts() {
+  const currentMonthIndex = months.indexOf(data.month);
+  const currentYear = data.year;
+
+  const daily = new Array(31).fill(0);
+  const categories = {};
+
+  data.expenses.forEach(e => {
+    const d = new Date(e.date);
+    if (d.getMonth() === currentMonthIndex && d.getFullYear() === currentYear) {
+      const day = d.getDate();
+      daily[day - 1] += e.amount;
+      categories[e.category] = (categories[e.category] || 0) + e.amount;
+    }
+  });
+
+  const ctx1 = document.getElementById("dailyChart").getContext("2d");
+  if (dailyChart) dailyChart.destroy();
+  dailyChart = new Chart(ctx1, {
+    type: "bar",
+    data: {
+      labels: [...Array(31).keys()].map(i => i + 1),
+      datasets: [{
+        label: "Spesa giornaliera",
+        data: daily,
+        backgroundColor: "#4da6ff"
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: "#ffffff" } },
+        y: { ticks: { color: "#ffffff" } }
+      }
+    }
+  });
+
+  const ctx2 = document.getElementById("categoryChart").getContext("2d");
+  if (categoryChart) categoryChart.destroy();
+  categoryChart = new Chart(ctx2, {
+    type: "bar",
+    data: {
+      labels: Object.keys(categories),
+      datasets: [{
+        label: "Spesa per categoria",
+        data: Object.values(categories),
+        backgroundColor: "#66ff99"
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: "#ffffff" } },
+        y: { ticks: { color: "#ffffff" } }
+      }
+    }
+  });
+}
+
+/* STORICO */
+function updateHistory() {
+  const list = document.getElementById("historyList");
+  list.innerHTML = "";
+
+  const currentMonthIndex = months.indexOf(data.month);
+  const currentYear = data.year;
+
+  const filtered = data.expenses.filter(e => {
+    const d = new Date(e.date);
+    return d.getMonth() === currentMonthIndex && d.getFullYear() === currentYear;
+  });
+
+  filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  filtered.forEach(e => {
+    const div = document.createElement("div");
+    div.textContent = `${e.date} - ${e.title} (€${e.amount.toFixed(2)}) [${e.category}]`;
+    list.appendChild(div);
+  });
+}
+
+/* SYNC CON APPS SCRIPT */
+function loadData() {
+  fetch(SCRIPT_URL + '?action=get')
+    .then(r => r.json())
+    .then(res => {
+      if (res && res.budget !== undefined) {
+        data = res;
+        document.getElementById("budgetInput").value = data.budget || "";
+        document.getElementById("yearSelect").value = data.year || 2026;
+      }
+      buildMonthSlider();
+      refreshAll();
+    })
+    .catch(() => {
+      refreshAll();
+    });
+}
+
+function saveData() {
+  fetch(SCRIPT_URL + '?action=save', {
+    method: 'POST',
+    contentType: 'application/json',
+    body: JSON.stringify(data)
+  }).catch(() => {});
+}
