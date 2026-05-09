@@ -234,4 +234,66 @@ function drawCharts() {
       plugins: { legend: { display: false } },
       scales: {
         x: { ticks: { color: "#ffffff" } },
-        y: { ticks: {
+        y: { ticks: { color: "#ffffff" } }
+      }
+    }
+  });
+}
+
+/* STORICO — CON BOTTONI MODIFICA + ELIMINA */
+function updateHistory() {
+  const list = document.getElementById("historyList");
+  list.innerHTML = "";
+
+  const currentMonthIndex = months.indexOf(data.month);
+  const currentYear = data.year;
+
+  const filtered = data.expenses
+    .map((e, i) => ({ ...e, index: i }))
+    .filter(e => {
+      const d = new Date(e.date);
+      return d.getMonth() === currentMonthIndex && d.getFullYear() === currentYear;
+    })
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  filtered.forEach(e => {
+    const div = document.createElement("div");
+    div.className = "historyItem";
+
+    div.innerHTML = `
+      ${e.date} - ${e.title} (€${e.amount.toFixed(2)}) [${e.category}]
+      <div class="historyButtons">
+        <button class="btn-orange" onclick="startEdit(${e.index})">Modifica</button>
+        <button class="btn-red" onclick="deleteExpense(${e.index})">Elimina</button>
+      </div>
+    `;
+
+    list.appendChild(div);
+  });
+}
+
+/* SYNC CON APPS SCRIPT */
+function loadData() {
+  fetch(SCRIPT_URL + '?action=get')
+    .then(r => r.json())
+    .then(res => {
+      if (res && res.budget !== undefined) {
+        data = res;
+        document.getElementById("budgetInput").value = data.budget || "";
+        document.getElementById("yearSelect").value = data.year || 2026;
+      }
+      buildMonthSlider();
+      refreshAll();
+    })
+    .catch(() => {
+      refreshAll();
+    });
+}
+
+function saveData() {
+  fetch(SCRIPT_URL + '?action=save', {
+    method: 'POST',
+    contentType: 'application/json',
+    body: JSON.stringify(data)
+  }).catch(() => {});
+}
