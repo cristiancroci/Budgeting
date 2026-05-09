@@ -7,8 +7,8 @@ let data = {
   expenses: []
 };
 
-
 let editIndex = null;
+let isSaving = false;
 
 const months = [
   "Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno",
@@ -18,11 +18,13 @@ const months = [
 let dailyChart = null;
 let categoryChart = null;
 
-window.onload = () => {
-  buildMonthSlider();
-  initYearSelect();
-  loadData();
-};
+/* BLOCCO CHIUSURA PAGINA DURANTE SALVATAGGIO */
+window.addEventListener("beforeunload", function (e) {
+  if (isSaving) {
+    e.preventDefault();
+    e.returnValue = "";
+  }
+});
 
 /* SEMAFORO */
 function setStatusSaving() {
@@ -44,6 +46,12 @@ function setStatusError() {
 }
 
 /* INIT */
+window.onload = () => {
+  buildMonthSlider();
+  initYearSelect();
+  loadData();
+};
+
 function initYearSelect() {
   const yearSelect = document.getElementById("yearSelect");
   yearSelect.value = data.year;
@@ -306,6 +314,7 @@ function updateHistory() {
 
 /* SYNC CON DRIVE */
 function loadData() {
+  isSaving = true;
   setStatusSaving();
 
   fetch(SCRIPT_URL + '?action=get')
@@ -319,14 +328,17 @@ function loadData() {
       buildMonthSlider();
       refreshAll();
       setStatusOK();
+      isSaving = false;
     })
     .catch(() => {
       refreshAll();
       setStatusError();
+      isSaving = false;
     });
 }
 
 function saveData() {
+  isSaving = true;
   setStatusSaving();
 
   fetch(SCRIPT_URL + '?action=save', {
@@ -338,8 +350,16 @@ function saveData() {
   })
   .then(r => r.json())
   .then(res => {
-    if (res.status === "ok") setStatusOK();
-    else setStatusError();
+    if (res.status === "ok") {
+      setStatusOK();
+      isSaving = false;
+    } else {
+      setStatusError();
+      isSaving = false;
+    }
   })
-  .catch(() => setStatusError());
+  .catch(() => {
+    setStatusError();
+    isSaving = false;
+  });
 }
