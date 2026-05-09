@@ -7,15 +7,12 @@
 
   <link rel="stylesheet" href="style.css">
 
-  <!-- Manifest PWA -->
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#1a1f36">
 
-  <!-- Icone -->
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
   <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
 
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -68,9 +65,9 @@
       <canvas id="categoryChart" height="200"></canvas>
     </div>
 
-    <!-- AGGIUNGI SPESA -->
+    <!-- AGGIUNGI / MODIFICA SPESA -->
     <div class="entry">
-      <div class="entryTitle">Aggiungi spesa</div>
+      <div class="entryTitle" id="formTitle">Aggiungi spesa</div>
 
       <input id="titleInput" placeholder="Titolo">
       <input id="amountInput" type="number" placeholder="Importo (€)">
@@ -96,7 +93,9 @@
       <input id="dateInput" type="date">
       <textarea id="noteInput" placeholder="Note"></textarea>
 
-      <button class="btn-save" onclick="addExpense()">Aggiungi</button>
+      <button class="btn-save" id="saveBtn" onclick="addExpense()">Aggiungi</button>
+      <button class="btn-orange" id="editBtn" style="display:none;" onclick="saveEdit()">Salva modifica</button>
+      <button class="btn-red" id="cancelEditBtn" style="display:none;" onclick="cancelEdit()">Annulla</button>
     </div>
 
     <!-- STORICO -->
