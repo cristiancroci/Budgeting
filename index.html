@@ -1,14 +1,20 @@
-<!DOCTYPE html><html lang="it"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Budgeting</title>
 <link rel="stylesheet" href="style.css">
-</head><body><div class="app">
+</head>
+
+<body>
+<div class="app">
 
 <h1>Budgeting</h1>
-<div class="subtitle">50/30/20 con mesi selezionabili</div>
+<div class="subtitle">50/30/20 con calendario mese</div>
 
 <label>📅 Mese:</label>
-<select id="meseSelect"></select>
+<input type="month" id="mesePicker">
 
 <div class="card">
 <input id="budgetInput" type="number" placeholder="Budget mensile (€)">
@@ -18,21 +24,43 @@
 </div>
 <input id="descInput" placeholder="Descrizione spesa">
 <input id="amountInput" type="number" placeholder="Importo (€)">
-<select id="catInput"><option value="">Categoria</option><option>Necessità</option><option>Desideri</option><option>Risparmio</option></select>
+<select id="catInput">
+<option value="">Categoria</option>
+<option>Necessità</option>
+<option>Desideri</option>
+<option>Risparmio</option>
+</select>
 <button class="btn" id="addBtn">➕ Aggiungi spesa</button>
+
 <div class="btn-row">
 <button class="btn-small" id="exportBtn">⬇️ Esporta</button>
 <button class="btn-small" id="importBtn">⬆️ Importa</button>
 </div>
+
 <input type="file" id="fileInput" accept="application/json">
 </div>
 
 <div class="card">
 <h3>Riepilogo 50/30/20</h3>
 <div id="totalInfo" class="percentText"></div>
-<div class="barGroup"><div class="barLabel">Necessità</div><div class="barOuter"><div id="barNec" class="barInner barNec"></div></div><div id="textNec" class="percentText"></div></div>
-<div class="barGroup"><div class="barLabel">Desideri</div><div class="barOuter"><div id="barDes" class="barInner barDes"></div></div><div id="textDes" class="percentText"></div></div>
-<div class="barGroup"><div class="barLabel">Risparmio</div><div class="barOuter"><div id="barRis" class="barInner barRis"></div></div><div id="textRis" class="percentText"></div></div>
+
+<div class="barGroup">
+<div class="barLabel">Necessità</div>
+<div class="barOuter"><div id="barNec" class="barInner barNec"></div></div>
+<div id="textNec" class="percentText"></div>
+</div>
+
+<div class="barGroup">
+<div class="barLabel">Desideri</div>
+<div class="barOuter"><div id="barDes" class="barInner barDes"></div></div>
+<div id="textDes" class="percentText"></div>
+</div>
+
+<div class="barGroup">
+<div class="barLabel">Risparmio</div>
+<div class="barOuter"><div id="barRis" class="barInner barRis"></div></div>
+<div id="textRis" class="percentText"></div>
+</div>
 </div>
 
 <h2>Storico spese</h2>
@@ -42,148 +70,182 @@
 let state={meseCorrente:"",mesi:{}};
 const $=id=>document.getElementById(id);
 
-function getMonthKey(){let d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");}
+function getMonthKey(){
+ let d=new Date();
+ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+}
+
 function mese(){return state.mesi[state.meseCorrente];}
 
 function load(){
-try{let r=localStorage.getItem("budgetingState");if(r)state=JSON.parse(r);}catch{}
-if(!state.meseCorrente)state.meseCorrente=getMonthKey();
-if(!state.mesi[state.meseCorrente])state.mesi[state.meseCorrente]={budget:0,extra:0,entries:[]};
+ try{
+   let r=localStorage.getItem("budgetingState");
+   if(r) state=JSON.parse(r);
+ }catch{}
+ if(!state.meseCorrente) state.meseCorrente=getMonthKey();
+ if(!state.mesi[state.meseCorrente])
+   state.mesi[state.meseCorrente]={budget:0,extra:0,entries:[]};
 }
 
-function save(){localStorage.setItem("budgetingState",JSON.stringify(state));}
-
-function renderMonths(){
-let sel=$("meseSelect");sel.innerHTML="";
-let now=new Date(),cy=now.getFullYear(),cm=now.getMonth()+1;
-for(let i=-24;i<=24;i++){
-let y=cy,m=cm+i;
-while(m<1){m+=12;y--;}
-while(m>12){m-=12;y++;}
-let key=y+"-"+String(m).padStart(2,"0");
-let opt=document.createElement("option");
-opt.value=key;opt.textContent=key;
-if(key===state.meseCorrente)opt.selected=true;
-sel.appendChild(opt);
-if(!state.mesi[key])state.mesi[key]={budget:0,extra:0,entries:[]};
-}
+function save(){
+ localStorage.setItem("budgetingState",JSON.stringify(state));
 }
 
-function total(){return (mese().budget||0)+(mese().extra||0);}
+function initMonthPicker(){
+ let key=state.meseCorrente;
+ $("mesePicker").value=key;
+}
+
+$("mesePicker").addEventListener("change",()=>{
+ let key=$("mesePicker").value;
+ if(!state.mesi[key])
+   state.mesi[key]={budget:0,extra:0,entries:[]};
+ state.meseCorrente=key;
+ save();
+ render();
+});
+
+function total(){
+ return (mese().budget||0)+(mese().extra||0);
+}
 
 function render(){
-renderMonths();
-let t=total();
-$("totalInfo").textContent="Budget totale: "+t+"€";
-$("budgetInput").value=mese().budget||"";
+ initMonthPicker();
 
-let nec=0,des=0,ris=0;
-mese().entries.forEach(e=>{
-if(e.cat==="Necessità")nec+=e.amount;
-if(e.cat==="Desideri")des+=e.amount;
-if(e.cat==="Risparmio")ris+=e.amount;
-});
+ let t=total();
+ $("totalInfo").textContent="Budget totale: "+t+"€";
+ $("budgetInput").value=mese().budget||"";
 
-let pN=t?Math.min(100,nec/(t*0.5)*100):0;
-let pD=t?Math.min(100,des/(t*0.3)*100):0;
-let pR=t?Math.min(100,ris/(t*0.2)*100):0;
+ let nec=0,des=0,ris=0;
+ mese().entries.forEach(e=>{
+   if(e.cat==="Necessità") nec+=e.amount;
+   if(e.cat==="Desideri") des+=e.amount;
+   if(e.cat==="Risparmio") ris+=e.amount;
+ });
 
-$("barNec").style.width=pN+"%";
-$("barDes").style.width=pD+"%";
-$("barRis").style.width=pR+"%";
+ let pN=t?Math.min(100,nec/(t*0.5)*100):0;
+ let pD=t?Math.min(100,des/(t*0.3)*100):0;
+ let pR=t?Math.min(100,ris/(t*0.2)*100):0;
 
-$("textNec").textContent=pN.toFixed(0)+"%";
-$("textDes").textContent=pD.toFixed(0)+"%";
-$("textRis").textContent=pR.toFixed(0)+"%";
+ $("barNec").style.width=pN+"%";
+ $("barDes").style.width=pD+"%";
+ $("barRis").style.width=pR+"%";
 
-let L=$("list");L.innerHTML="";
-if(mese().entries.length===0){L.innerHTML=`<div class="empty">Nessuna spesa.</div>`;return;}
+ $("textNec").textContent=pN.toFixed(0)+"%";
+ $("textDes").textContent=pD.toFixed(0)+"%";
+ $("textRis").textContent=pR.toFixed(0)+"%";
 
-mese().entries.forEach((e,i)=>{
-let p=t?Math.min(100,e.amount/t*100):0;
-let d=document.createElement("div");
-d.className="entry";d.dataset.index=i;
-d.innerHTML=`
-<div class="entryTop">
-<div><div class="entryDesc">${e.desc}</div><div class="entryMeta">${e.cat} · ${e.date}</div></div>
-<div class="entryActions"><div class="entryAmount">-${e.amount}€</div><span class="edit">✏️</span><span class="delete">🗑</span></div>
-</div>
-<div class="barOuter"><div class="barInner" style="width:${p}%"></div></div>
-<div class="percentText">${p.toFixed(0)}%</div>`;
-L.appendChild(d);
-});
+ let L=$("list");
+ L.innerHTML="";
+
+ if(mese().entries.length===0){
+   L.innerHTML=`<div class="empty">Nessuna spesa.</div>`;
+   return;
+ }
+
+ mese().entries.forEach((e,i)=>{
+   let p=t?Math.min(100,e.amount/t*100):0;
+
+   let d=document.createElement("div");
+   d.className="entry";
+   d.dataset.index=i;
+
+   d.innerHTML=`
+   <div class="entryTop">
+     <div>
+       <div class="entryDesc">${e.desc}</div>
+       <div class="entryMeta">${e.cat} · ${e.date}</div>
+     </div>
+     <div class="entryActions">
+       <div class="entryAmount">-${e.amount}€</div>
+       <span class="edit">✏️</span>
+       <span class="delete">🗑</span>
+     </div>
+   </div>
+   <div class="barOuter"><div class="barInner" style="width:${p}%"></div></div>
+   <div class="percentText">${p.toFixed(0)}%</div>`;
+
+   L.appendChild(d);
+ });
 }
 
 function addEntry(){
-let d=$("descInput").value.trim();
-let a=parseFloat($("amountInput").value);
-let c=$("catInput").value;
-if(!d||!a||!c)return;
-let date=new Date().toLocaleDateString("it-IT");
-mese().entries.push({desc:d,amount:a,cat:c,date});
-$("descInput").value="";$("amountInput").value="";$("catInput").value="";
-save();render();
+ let d=$("descInput").value.trim();
+ let a=parseFloat($("amountInput").value);
+ let c=$("catInput").value;
+
+ if(!d||!a||!c) return;
+
+ let date=new Date().toLocaleDateString("it-IT");
+ mese().entries.push({desc:d,amount:a,cat:c,date});
+
+ $("descInput").value="";
+ $("amountInput").value="";
+ $("catInput").value="";
+
+ save();
+ render();
 }
 
 function addExtra(){
-let x=parseFloat($("extraInput").value);
-if(!x)return;
-mese().extra+=x;$("extraInput").value="";
-save();render();
+ let x=parseFloat($("extraInput").value);
+ if(!x) return;
+ mese().extra+=x;
+ $("extraInput").value="";
+ save();
+ render();
 }
 
 function edit(i){
-let e=mese().entries[i];
-let d=prompt("Descrizione:",e.desc);if(d===null)return;
-let a=parseFloat(prompt("Importo:",e.amount));if(!a)return;
-let c=prompt("Categoria:",e.cat);if(!c)return;
-e.desc=d;e.amount=a;e.cat=c;
-save();render();
+ let e=mese().entries[i];
+ let d=prompt("Descrizione:",e.desc);if(d===null)return;
+ let a=parseFloat(prompt("Importo:",e.amount));if(!a)return;
+ let c=prompt("Categoria:",e.cat);if(!c)return;
+ e.desc=d;e.amount=a;e.cat=c;
+ save();render();
 }
 
 function del(i){
-if(!confirm("Eliminare?"))return;
-mese().entries.splice(i,1);
-save();render();
+ if(!confirm("Eliminare?"))return;
+ mese().entries.splice(i,1);
+ save();render();
 }
 
 $("addBtn").onclick=addEntry;
 $("addExtraBtn").onclick=addExtra;
 
 $("budgetInput").onchange=()=>{
-let b=parseFloat($("budgetInput").value);
-if(b>=0){mese().budget=b;save();render();}
-};
-
-$("meseSelect").onchange=e=>{
-state.meseCorrente=e.target.value;
-save();render();
+ let b=parseFloat($("budgetInput").value);
+ if(b>=0){mese().budget=b;save();render();}
 };
 
 $("list").onclick=e=>{
-let el=e.target.closest(".entry");if(!el)return;
-let i=el.dataset.index;
-if(e.target.classList.contains("edit"))edit(i);
-if(e.target.classList.contains("delete"))del(i);
+ let el=e.target.closest(".entry");if(!el)return;
+ let i=el.dataset.index;
+ if(e.target.classList.contains("edit"))edit(i);
+ if(e.target.classList.contains("delete"))del(i);
 };
 
 $("exportBtn").onclick=()=>{
-let blob=new Blob([JSON.stringify(state)],{type:"application/json"});
-let a=document.createElement("a");
-a.href=URL.createObjectURL(blob);
-a.download="budget.json";
-a.click();
+ let blob=new Blob([JSON.stringify(state)],{type:"application/json"});
+ let a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);
+ a.download="budget.json";
+ a.click();
 };
 
 $("importBtn").onclick=()=>{$("fileInput").click();};
 $("fileInput").onchange=()=>{
-let f=$("fileInput").files[0];
-let r=new FileReader();
-r.onload=e=>{state=JSON.parse(e.target.result);save();render();};
-r.readAsText(f);
+ let f=$("fileInput").files[0];
+ let r=new FileReader();
+ r.onload=e=>{state=JSON.parse(e.target.result);save();render();};
+ r.readAsText(f);
 };
 
-load();render();
+load();
+render();
 </script>
 
-</div></body></html>
+</div>
+</body>
+</html>
