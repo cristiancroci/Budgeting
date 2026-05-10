@@ -92,8 +92,7 @@ function save(){
 }
 
 function initMonthPicker(){
- let key=state.meseCorrente;
- $("mesePicker").value=key;
+ $("mesePicker").value=state.meseCorrente;
 }
 
 $("mesePicker").addEventListener("change",()=>{
@@ -131,9 +130,14 @@ function render(){
  $("barDes").style.width=pD+"%";
  $("barRis").style.width=pR+"%";
 
- $("textNec").textContent=pN.toFixed(0)+"%";
- $("textDes").textContent=pD.toFixed(0)+"%";
- $("textRis").textContent=pR.toFixed(0)+"%";
+ $("textNec").textContent=
+   pN.toFixed(0)+"% — "+nec.toFixed(2)+"€ / "+(t*0.50).toFixed(2)+"€";
+
+ $("textDes").textContent=
+   pD.toFixed(0)+"% — "+des.toFixed(2)+"€ / "+(t*0.30).toFixed(2)+"€";
+
+ $("textRis").textContent=
+   pR.toFixed(0)+"% — "+ris.toFixed(2)+"€ / "+(t*0.20).toFixed(2)+"€";
 
  let L=$("list");
  L.innerHTML="";
