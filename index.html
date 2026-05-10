@@ -6,9 +6,6 @@
 <title>Budgeting</title>
 
 <style>
-/* ------------------------------
-   TEMA CHIARO + STILE PULITO
---------------------------------*/
 :root {
   --bg: #f5f7fb;
   --card: #ffffff;
@@ -47,9 +44,6 @@ h1 {
   margin-bottom: 20px;
 }
 
-/* ------------------------------
-   CARD
---------------------------------*/
 .card {
   background: var(--card);
   border-radius: 16px;
@@ -59,9 +53,6 @@ h1 {
   border: 1px solid rgba(0,0,0,0.04);
 }
 
-/* ------------------------------
-   INPUT + SELECT
---------------------------------*/
 input, select {
   width: 100%;
   padding: 10px 12px;
@@ -79,9 +70,6 @@ input:focus, select:focus {
   background: #fff;
 }
 
-/* ------------------------------
-   PULSANTE CANGIANTE
---------------------------------*/
 .btn {
   width: 100%;
   padding: 12px;
@@ -98,15 +86,34 @@ input:focus, select:focus {
   margin-top: 4px;
 }
 
+.btn-small {
+  width: auto;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+  color: white;
+  font-weight: 500;
+  font-size: .85rem;
+  cursor: pointer;
+  background: linear-gradient(120deg, #00c9a7, #6a5acd);
+  background-size: 200% 200%;
+  animation: gradientShift 5s ease infinite;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+}
+
+.btn-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
 @keyframes gradientShift {
   0% { background-position: 0% 50% }
   50% { background-position: 100% 50% }
   100% { background-position: 0% 50% }
 }
 
-/* ------------------------------
-   RIEPILOGO
---------------------------------*/
 .summary {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -133,9 +140,6 @@ input:focus, select:focus {
 .positive { color: var(--accent3) }
 .negative { color: var(--accent2) }
 
-/* ------------------------------
-   BARRA LUMINOSA
---------------------------------*/
 .barOuter {
   width: 100%;
   height: 16px;
@@ -160,9 +164,6 @@ input:focus, select:focus {
   color: #555;
 }
 
-/* ------------------------------
-   LISTA SPESE
---------------------------------*/
 .entry {
   background: #fff;
   border-radius: 12px;
@@ -191,6 +192,10 @@ input:focus, select:focus {
   color: #888;
   margin-top: 6px;
 }
+
+#fileInput {
+  display: none;
+}
 </style>
 </head>
 
@@ -198,7 +203,7 @@ input:focus, select:focus {
 <div class="app">
 
 <h1>Budgeting</h1>
-<div class="subtitle">Tema chiaro, pulsanti cangianti e barre luminose 🔆</div>
+<div class="subtitle">Tema chiaro, pulsanti cangianti, barre luminose e backup manuale 🔆</div>
 
 <!-- FORM -->
 <div class="card">
@@ -219,6 +224,13 @@ input:focus, select:focus {
     <option>Altro</option>
   </select>
   <button class="btn" id="addBtn">➕ Aggiungi spesa</button>
+
+  <div class="btn-row">
+    <button class="btn-small" id="exportBtn">⬇️ Esporta dati</button>
+    <button class="btn-small" id="importBtn">⬆️ Importa dati</button>
+    <button class="btn-small" id="resetBtn">🗑 Reset tutto</button>
+  </div>
+  <input type="file" id="fileInput" accept="application/json">
 </div>
 
 <!-- RIEPILOGO -->
@@ -240,16 +252,12 @@ input:focus, select:focus {
   <div id="percentText" class="percentText">0% del budget usato</div>
 </div>
 
-<!-- LISTA -->
 <h2>Storico spese</h2>
 <div id="list"></div>
 
 </div>
 
 <script>
-/* ------------------------------
-   VARIABILI
---------------------------------*/
 const budgetInput = document.getElementById("budgetInput");
 const descInput = document.getElementById("descInput");
 const amountInput = document.getElementById("amountInput");
@@ -262,23 +270,26 @@ const barInner = document.getElementById("barInner");
 const percentText = document.getElementById("percentText");
 const list = document.getElementById("list");
 
+const exportBtn = document.getElementById("exportBtn");
+const importBtn = document.getElementById("importBtn");
+const resetBtn = document.getElementById("resetBtn");
+const fileInput = document.getElementById("fileInput");
+
 let state = { budget: 0, entries: [] };
 
-/* ------------------------------
-   LOCAL STORAGE
---------------------------------*/
 function loadState() {
-  const raw = localStorage.getItem("budgetingState");
-  if (raw) state = JSON.parse(raw);
+  try {
+    const raw = localStorage.getItem("budgetingState");
+    if (raw) state = JSON.parse(raw);
+  } catch {
+    state = { budget: 0, entries: [] };
+  }
 }
 
 function saveState() {
   localStorage.setItem("budgetingState", JSON.stringify(state));
 }
 
-/* ------------------------------
-   RENDER
---------------------------------*/
 function render() {
   if (state.budget > 0) budgetInput.value = state.budget;
 
@@ -307,15 +318,12 @@ function render() {
         <div class="entryDesc">${e.desc}</div>
         <div class="entryAmount">-${e.amount.toFixed(2)} €</div>
       </div>
-      <div class="entryMeta">📂 ${e.cat} · ${e.date}</div>
+      <div class="entryMeta">📂 ${e.cat || "Senza categoria"} · ${e.date}</div>
     `;
     list.appendChild(div);
   });
 }
 
-/* ------------------------------
-   AGGIUNGI SPESA
---------------------------------*/
 function addEntry() {
   const b = parseFloat(budgetInput.value);
   if (!isNaN(b) && b >= 0) state.budget = b;
@@ -350,9 +358,54 @@ budgetInput.onchange = () => {
   }
 };
 
-/* ------------------------------
-   START
---------------------------------*/
+/* EXPORT */
+exportBtn.onclick = () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  const date = new Date().toISOString().slice(0,10);
+  a.download = `budgeting-${date}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+/* IMPORT */
+importBtn.onclick = () => {
+  fileInput.value = "";
+  fileInput.click();
+};
+
+fileInput.onchange = () => {
+  const file = fileInput.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data || typeof data !== "object") return;
+      if (!Array.isArray(data.entries)) data.entries = [];
+      if (typeof data.budget !== "number") data.budget = 0;
+      state = data;
+      saveState();
+      render();
+    } catch {
+      // se il file è sbagliato, semplicemente ignora
+    }
+  };
+  reader.readAsText(file);
+};
+
+/* RESET */
+resetBtn.onclick = () => {
+  if (!confirm("Sei sicuro di voler cancellare tutto?")) return;
+  state = { budget: 0, entries: [] };
+  saveState();
+  render();
+};
+
 loadState();
 render();
 </script>
