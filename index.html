@@ -14,7 +14,7 @@
   /* COLORI 50/30/20 */
   --nec: #ff3b3b;   /* Necessità rosso pulsante */
   --des: #3b7bff;   /* Desideri blu neon */
-  --ris: #00c96b;   /* Risparmio verde neon */
+  --ris: #00c96b;   /* Risparmio verde */
 }
 
 body {
@@ -183,6 +183,25 @@ input:focus, select:focus {
   color: #777;
 }
 
+/* Icone stile B */
+.entryActions {
+  display: flex;
+  gap: 10px;
+  font-size: 1.2rem;
+  margin-top: 6px;
+}
+
+.entryActions span {
+  cursor: pointer;
+  opacity: 0.7;
+  transition: .2s;
+}
+
+.entryActions span:hover {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
 /* Barra luminosa per ogni voce */
 .entry .barOuter {
   height: 12px;
@@ -212,11 +231,14 @@ input:focus, select:focus {
 <div class="app">
 
 <h1>Budgeting</h1>
-<div class="subtitle">Metodo 50/30/20 con barre luminose 🔥</div>
+<div class="subtitle">Metodo 50/30/20 con modifica ed eliminazione 🔥</div>
 
 <!-- FORM -->
 <div class="card">
   <input id="budgetInput" type="number" placeholder="Budget mensile (€)">
+  <input id="extraInput" type="number" placeholder="Entrata extra (€)">
+  <button class="btn-small" id="addExtraBtn">➕ Aggiungi entrata</button>
+
   <input id="descInput" placeholder="Descrizione spesa">
   <input id="amountInput" type="number" placeholder="Importo (€)">
   <select id="catInput">
@@ -264,184 +286,3 @@ input:focus, select:focus {
 <div id="list"></div>
 
 </div>
-
-<script>
-const budgetInput = document.getElementById("budgetInput");
-const descInput = document.getElementById("descInput");
-const amountInput = document.getElementById("amountInput");
-const catInput = document.getElementById("catInput");
-const addBtn = document.getElementById("addBtn");
-
-const barNec = document.getElementById("barNec");
-const barDes = document.getElementById("barDes");
-const barRis = document.getElementById("barRis");
-
-const textNec = document.getElementById("textNec");
-const textDes = document.getElementById("textDes");
-const textRis = document.getElementById("textRis");
-
-const list = document.getElementById("list");
-
-const exportBtn = document.getElementById("exportBtn");
-const importBtn = document.getElementById("importBtn");
-const resetBtn = document.getElementById("resetBtn");
-const fileInput = document.getElementById("fileInput");
-
-let state = { budget: 0, entries: [] };
-
-function loadState() {
-  try {
-    const raw = localStorage.getItem("budgetingState");
-    if (raw) state = JSON.parse(raw);
-  } catch {}
-}
-
-function saveState() {
-  localStorage.setItem("budgetingState", JSON.stringify(state));
-}
-
-function render() {
-  if (state.budget > 0) budgetInput.value = state.budget;
-
-  let nec = 0, des = 0, ris = 0;
-
-  state.entries.forEach(e => {
-    if (e.cat === "Necessità") nec += e.amount;
-    if (e.cat === "Desideri") des += e.amount;
-    if (e.cat === "Risparmio") ris += e.amount;
-  });
-
-  const limNec = state.budget * 0.50;
-  const limDes = state.budget * 0.30;
-  const limRis = state.budget * 0.20;
-
-  const pNec = limNec > 0 ? Math.min(100, Math.round((nec / limNec) * 100)) : 0;
-  const pDes = limDes > 0 ? Math.min(100, Math.round((des / limDes) * 100)) : 0;
-  const pRis = limRis > 0 ? Math.min(100, Math.round((ris / limRis) * 100)) : 0;
-
-  barNec.style.width = pNec + "%";
-  barDes.style.width = pDes + "%";
-  barRis.style.width = pRis + "%";
-
-  textNec.textContent = `${pNec}% usato (${nec.toFixed(2)}€ / ${limNec.toFixed(2)}€)`;
-  textDes.textContent = `${pDes}% usato (${des.toFixed(2)}€ / ${limDes.toFixed(2)}€)`;
-  textRis.textContent = `${pRis}% usato (${ris.toFixed(2)}€ / ${limRis.toFixed(2)}€)`;
-
-  list.innerHTML = "";
-  if (state.entries.length === 0) {
-    list.innerHTML = `<div class="empty">Nessuna spesa ancora.</div>`;
-    return;
-  }
-
-  state.entries.forEach(e => {
-    const percentEntry = state.budget > 0 
-      ? Math.min(100, Math.round((e.amount / state.budget) * 100))
-      : 0;
-
-    const div = document.createElement("div");
-    div.className = "entry";
-
-    div.innerHTML = `
-      <div class="entryTop">
-        <div class="entryDesc">${e.desc}</div>
-        <div class="entryAmount">-${e.amount.toFixed(2)} €</div>
-      </div>
-
-      <div class="entryMeta">📂 ${e.cat} · ${e.date}</div>
-
-      <div class="barOuter">
-        <div class="barInner" style="width:${percentEntry}%;"></div>
-      </div>
-      <div class="percentText">${percentEntry}% del budget</div>
-    `;
-
-    list.appendChild(div);
-  });
-}
-
-function addEntry() {
-  const b = parseFloat(budgetInput.value);
-  if (!isNaN(b) && b >= 0) state.budget = b;
-
-  const desc = descInput.value.trim();
-  const amount = parseFloat(amountInput.value);
-  const cat = catInput.value;
-
-  if (!desc || isNaN(amount) || amount <= 0 || !cat) return;
-
-  const now = new Date();
-  const dateStr = now.toLocaleDateString("it-IT");
-
-  state.entries.push({ desc, amount, cat, date: dateStr });
-
-  descInput.value = "";
-  amountInput.value = "";
-  catInput.value = "";
-
-  saveState();
-  render();
-}
-
-addBtn.onclick = addEntry;
-
-budgetInput.onchange = () => {
-  const b = parseFloat(budgetInput.value);
-  if (!isNaN(b) && b >= 0) {
-    state.budget = b;
-    saveState();
-    render();
-  }
-};
-
-/* EXPORT */
-exportBtn.onclick = () => {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  const date = new Date().toISOString().slice(0,10);
-  a.download = `budgeting-${date}.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-};
-
-/* IMPORT */
-importBtn.onclick = () => {
-  fileInput.value = "";
-  fileInput.click();
-};
-
-fileInput.onchange = () => {
-  const file = fileInput.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const data = JSON.parse(e.target.result);
-      if (!data || typeof data !== "object") return;
-      if (!Array.isArray(data.entries)) data.entries = [];
-      if (typeof data.budget !== "number") data.budget = 0;
-      state = data;
-      saveState();
-      render();
-    } catch {}
-  };
-  reader.readAsText(file);
-};
-
-/* RESET */
-resetBtn.onclick = () => {
-  if (!confirm("Sei sicuro di voler cancellare tutto?")) return;
-  state = { budget: 0, entries: [] };
-  saveState();
-  render();
-};
-
-loadState();
-render();
-</script>
-
-</body>
-</html>
