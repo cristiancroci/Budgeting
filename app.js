@@ -190,4 +190,6 @@ function escapeHtml(str) {
 ============================ */
 
 const addBtn = document.getElementById("addBtn");
+addBtn.onclick = addEntry;
+
 load();
