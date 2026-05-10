@@ -15,26 +15,7 @@ let editIndex = null;
 let isSaving = false;
 
 /* ============================
-   GRUPPI 50‑30‑20
-============================ */
-
-const groupMap = {
-  "Spesa": "necessita",
-  "Bollette": "necessita",
-  "Auto": "necessita",
-  "Salute": "necessita",
-
-  "Shopping": "desideri",
-  "Tempo libero": "desideri",
-  "Ristoranti": "desideri",
-  "Hobby": "desideri",
-
-  "Risparmio": "risparmio",
-  "Investimenti": "risparmio"
-};
-
-/* ============================
-   SEMAFORO
+   SEMAFORO (SOLO SALVATAGGIO)
 ============================ */
 
 function setStatusSaving() {
@@ -52,7 +33,7 @@ function setStatusOK() {
 function setStatusError() {
   const s = document.getElementById("saveStatus");
   s.className = "statusIndicator error";
-  s.textContent = "🔴 Errore";
+  s.textContent = "🔴 Errore salvataggio";
 }
 
 /* ============================
@@ -98,11 +79,30 @@ async function saveData() {
 }
 
 /* ============================
+   GRUPPI 50‑30‑20
+============================ */
+
+const groupMap = {
+  "Spesa": "necessita",
+  "Bollette": "necessita",
+  "Auto": "necessita",
+  "Salute": "necessita",
+
+  "Shopping": "desideri",
+  "Tempo libero": "desideri",
+  "Ristoranti": "desideri",
+  "Hobby": "desideri",
+
+  "Risparmio": "risparmio",
+  "Investimenti": "risparmio"
+};
+
+/* ============================
    CALCOLI 50‑30‑20
 ============================ */
 
 function calculateTotals() {
-  const budget = data.budget;
+  const budget = data.budget || 0;
 
   const limits = {
     necessita: budget * 0.50,
@@ -133,7 +133,7 @@ function calculateTotals() {
 ============================ */
 
 function updateUI() {
-  document.getElementById("budgetInput").value = data.budget;
+  document.getElementById("budgetInput").value = data.budget || "";
   document.getElementById("monthSelect").value = data.month;
   document.getElementById("yearSelect").value = data.year;
 
@@ -142,56 +142,79 @@ function updateUI() {
 }
 
 /* ============================
-   UPDATE SUMMARY (50‑30‑20)
+   UPDATE SUMMARY + BARRE
 ============================ */
 
 function updateSummary() {
+  const budget = data.budget || 0;
+
+  const necLimitEl = document.getElementById("necLimit");
+  const desLimitEl = document.getElementById("desLimit");
+  const risLimitEl = document.getElementById("risLimit");
+
+  const necUsedEl = document.getElementById("necUsed");
+  const desUsedEl = document.getElementById("desUsed");
+  const risUsedEl = document.getElementById("risUsed");
+
+  const necLeftEl = document.getElementById("necLeft");
+  const desLeftEl = document.getElementById("desLeft");
+  const risLeftEl = document.getElementById("risLeft");
+
+  const totaleSpeseEl = document.getElementById("totaleSpese");
+  const residuoTotaleEl = document.getElementById("residuoTotale");
+
+  const barNec = document.getElementById("barNec");
+  const barDes = document.getElementById("barDes");
+  const barRis = document.getElementById("barRis");
+
+  if (budget <= 0) {
+    necLimitEl.textContent = "0€";
+    desLimitEl.textContent = "0€";
+    risLimitEl.textContent = "0€";
+
+    necUsedEl.textContent = "0€";
+    desUsedEl.textContent = "0€";
+    risUsedEl.textContent = "0€";
+
+    necLeftEl.textContent = "0€";
+    desLeftEl.textContent = "0€";
+    risLeftEl.textContent = "0€";
+
+    totaleSpeseEl.textContent = "0€";
+    residuoTotaleEl.textContent = "0€";
+
+    barNec.style.width = "0%";
+    barDes.style.width = "0%";
+    barRis.style.width = "0%";
+    return;
+  }
+
   const { limits, totals, residui, totaleSpese, residuoTotale } = calculateTotals();
 
-  necLimit.textContent = limits.necessita.toFixed(2) + "€";
-  desLimit.textContent = limits.desideri.toFixed(2) + "€";
-  risLimit.textContent = limits.risparmio.toFixed(2) + "€";
+  necLimitEl.textContent = limits.necessita.toFixed(2) + "€";
+  desLimitEl.textContent = limits.desideri.toFixed(2) + "€";
+  risLimitEl.textContent = limits.risparmio.toFixed(2) + "€";
 
-  necUsed.textContent = totals.necessita.toFixed(2) + "€";
-  desUsed.textContent = totals.desideri.toFixed(2) + "€";
-  risUsed.textContent = totals.risparmio.toFixed(2) + "€";
+  necUsedEl.textContent = totals.necessita.toFixed(2) + "€";
+  desUsedEl.textContent = totals.desideri.toFixed(2) + "€";
+  risUsedEl.textContent = totals.risparmio.toFixed(2) + "€";
 
-  necLeft.textContent = residui.necessita.toFixed(2) + "€";
-  desLeft.textContent = residui.desideri.toFixed(2) + "€";
-  risLeft.textContent = residui.risparmio.toFixed(2) + "€";
-
-  totaleSpeseEl = document.getElementById("totaleSpese");
-  residuoTotaleEl = document.getElementById("residuoTotale");
+  necLeftEl.textContent = residui.necessita.toFixed(2) + "€";
+  desLeftEl.textContent = residui.desideri.toFixed(2) + "€";
+  risLeftEl.textContent = residui.risparmio.toFixed(2) + "€";
 
   totaleSpeseEl.textContent = totaleSpese.toFixed(2) + "€";
   residuoTotaleEl.textContent = residuoTotale.toFixed(2) + "€";
 
-  updateSemaforo(limits, totals, residuoTotale);
-}
-
-/* ============================
-   SEMAFORO LOGICA
-============================ */
-
-function updateSemaforo(limits, totals, residuoTotale) {
-  if (residuoTotale < 0 ||
-      totals.necessita > limits.necessita ||
-      totals.desideri > limits.desideri ||
-      totals.risparmio > limits.risparmio) {
-    setStatusError();
-    return;
-  }
-
-  if (totals.necessita > limits.necessita * 0.7 ||
-      totals.desideri > limits.desideri * 0.7 ||
-      totals.risparmio > limits.risparmio * 0.7) {
-    const s = document.getElementById("saveStatus");
-    s.className = "statusIndicator saving";
-    s.textContent = "🟡 Attenzione";
-    return;
-  }
-
-  setStatusOK();
+  barNec.style.width = limits.necessita > 0
+    ? Math.min((totals.necessita / limits.necessita) * 100, 100) + "%"
+    : "0%";
+  barDes.style.width = limits.desideri > 0
+    ? Math.min((totals.desideri / limits.desideri) * 100, 100) + "%"
+    : "0%";
+  barRis.style.width = limits.risparmio > 0
+    ? Math.min((totals.risparmio / limits.risparmio) * 100, 100) + "%"
+    : "0%";
 }
 
 /* ============================
@@ -199,12 +222,22 @@ function updateSemaforo(limits, totals, residuoTotale) {
 ============================ */
 
 function addExpense() {
+  const descInput = document.getElementById("descInput");
+  const amountInput = document.getElementById("amountInput");
+  const categoryInput = document.getElementById("categoryInput");
+  const noteInput = document.getElementById("noteInput");
+  const addBtn = document.getElementById("addBtn");
+
   const desc = descInput.value.trim();
   const amount = parseFloat(amountInput.value);
   const category = categoryInput.value;
   const note = noteInput.value.trim();
 
   if (!desc || isNaN(amount)) return;
+  if (!data.budget || data.budget <= 0) {
+    alert("Inserisci prima un budget mensile.");
+    return;
+  }
 
   const group = groupMap[category];
 
@@ -238,13 +271,13 @@ function addExpense() {
 function editExpense(i) {
   const e = data.expenses[i];
 
-  descInput.value = e.desc;
-  amountInput.value = e.amount;
-  categoryInput.value = e.category;
-  noteInput.value = e.note || "";
+  document.getElementById("descInput").value = e.desc;
+  document.getElementById("amountInput").value = e.amount;
+  document.getElementById("categoryInput").value = e.category;
+  document.getElementById("noteInput").value = e.note || "";
 
   editIndex = i;
-  addBtn.textContent = "💾 Salva modifica";
+  document.getElementById("addBtn").textContent = "💾 Salva modifica";
 }
 
 /* ============================
@@ -263,32 +296,10 @@ function deleteExpense(i) {
 ============================ */
 
 function clearForm() {
-  descInput.value = "";
-  amountInput.value = "";
-  noteInput.value = "";
-  categoryInput.value = "Spesa";
-}
-
-/* ============================
-   SORT
-============================ */
-
-function applySort() {
-  const mode = sortSelect.value;
-
-  if (mode === "recent") {
-    data.expenses.sort((a, b) => b.date.localeCompare(a.date));
-  }
-
-  if (mode === "az") {
-    data.expenses.sort((a, b) => a.desc.localeCompare(b.desc));
-  }
-
-  if (mode === "za") {
-    data.expenses.sort((a, b) => b.desc.localeCompare(a.desc));
-  }
-
-  renderList();
+  document.getElementById("descInput").value = "";
+  document.getElementById("amountInput").value = "";
+  document.getElementById("noteInput").value = "";
+  document.getElementById("categoryInput").value = "Spesa";
 }
 
 /* ============================
@@ -304,7 +315,7 @@ function renderList() {
     div.className = "item";
 
     div.innerHTML = `
-      <div class="itemTitle">${e.desc} — ${e.amount}€</div>
+      <div class="itemTitle">${e.desc} — ${e.amount.toFixed(2)}€</div>
       <div class="itemSub">${e.category} • ${e.date}</div>
       ${e.note ? `<div class="itemNote">${e.note}</div>` : ""}
       <div class="itemBtns">
@@ -321,19 +332,20 @@ function renderList() {
    LISTENERS
 ============================ */
 
-budgetInput.addEventListener("change", () => {
-  data.budget = parseFloat(budgetInput.value) || 0;
+document.getElementById("budgetInput").addEventListener("change", () => {
+  const val = parseFloat(document.getElementById("budgetInput").value);
+  data.budget = isNaN(val) ? 0 : val;
   updateSummary();
   saveData();
 });
 
-monthSelect.addEventListener("change", () => {
-  data.month = monthSelect.value;
+document.getElementById("monthSelect").addEventListener("change", () => {
+  data.month = document.getElementById("monthSelect").value;
   saveData();
 });
 
-yearSelect.addEventListener("change", () => {
-  data.year = parseInt(yearSelect.value);
+document.getElementById("yearSelect").addEventListener("change", () => {
+  data.year = parseInt(document.getElementById("yearSelect").value);
   saveData();
 });
 
