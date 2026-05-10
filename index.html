@@ -10,9 +10,11 @@
   --bg: #f5f7fb;
   --card: #ffffff;
   --text: #222;
-  --accent1: #6a5acd;
-  --accent2: #ff6b6b;
-  --accent3: #00c9a7;
+
+  /* COLORI 50/30/20 */
+  --nec: #ff3b3b;   /* Necessità rosso pulsante */
+  --des: #3b7bff;   /* Desideri blu neon */
+  --ris: #00c96b;   /* Risparmio verde neon */
 }
 
 body {
@@ -65,7 +67,7 @@ input, select {
 }
 
 input:focus, select:focus {
-  border-color: var(--accent1);
+  border-color: #6a5acd;
   box-shadow: 0 0 0 2px rgba(106,90,205,0.2);
   background: #fff;
 }
@@ -114,51 +116,40 @@ input:focus, select:focus {
   100% { background-position: 0% 50% }
 }
 
-.summary {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+/* ------------------------------
+   RIEPILOGO 50/30/20
+--------------------------------*/
+.barGroup {
+  margin-top: 14px;
 }
 
-.sumBox {
-  background: #f7f8ff;
-  border-radius: 12px;
-  padding: 10px;
-  border: 1px solid #e0e3ff;
+.barLabel {
+  font-size: .85rem;
+  margin-bottom: 4px;
+  color: #555;
 }
-
-.sumLabel {
-  font-size: .8rem;
-  color: #777;
-}
-
-.sumValue {
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.positive { color: var(--accent3) }
-.negative { color: var(--accent2) }
 
 .barOuter {
   width: 100%;
   height: 16px;
-  background: #e4e7ff;
   border-radius: 999px;
   overflow: hidden;
-  margin-top: 10px;
+  background: #e4e7ff;
   box-shadow: inset 0 0 6px rgba(0,0,0,0.15);
 }
 
 .barInner {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, #00c9a7, #f7b733, #ff6b6b);
   background-size: 200% 200%;
   animation: gradientShift 4s ease infinite;
-  box-shadow: 0 0 12px rgba(255,107,107,0.7);
   transition: width .3s ease;
 }
+
+/* COLORI BARRE 50/30/20 */
+.barNec { background: linear-gradient(90deg, var(--nec), #ff8a8a); box-shadow: 0 0 12px rgba(255,0,0,0.6); }
+.barDes { background: linear-gradient(90deg, var(--des), #8ab3ff); box-shadow: 0 0 12px rgba(0,80,255,0.6); }
+.barRis { background: linear-gradient(90deg, var(--ris), #7dffb8); box-shadow: 0 0 12px rgba(0,255,120,0.6); }
 
 .percentText {
   font-size: .8rem;
@@ -166,6 +157,9 @@ input:focus, select:focus {
   color: #555;
 }
 
+/* ------------------------------
+   LISTA SPESE
+--------------------------------*/
 .entry {
   background: #fff;
   border-radius: 12px;
@@ -182,13 +176,14 @@ input:focus, select:focus {
 }
 
 .entryDesc { font-weight: 600 }
-.entryAmount { font-weight: 600; color: var(--accent2) }
+.entryAmount { font-weight: 600; color: var(--nec) }
 
 .entryMeta {
   font-size: .78rem;
   color: #777;
 }
 
+/* Barra luminosa per ogni voce */
 .entry .barOuter {
   height: 12px;
   margin-top: 8px;
@@ -217,7 +212,7 @@ input:focus, select:focus {
 <div class="app">
 
 <h1>Budgeting</h1>
-<div class="subtitle">Tema chiaro, pulsanti cangianti, barre luminose e backup 🔆</div>
+<div class="subtitle">Metodo 50/30/20 con barre luminose 🔥</div>
 
 <!-- FORM -->
 <div class="card">
@@ -226,16 +221,9 @@ input:focus, select:focus {
   <input id="amountInput" type="number" placeholder="Importo (€)">
   <select id="catInput">
     <option value="">Categoria</option>
-    <option>Spesa</option>
-    <option>Bollette</option>
-    <option>Auto</option>
-    <option>Salute</option>
-    <option>Shopping</option>
-    <option>Tempo libero</option>
-    <option>Ristoranti</option>
-    <option>Hobby</option>
+    <option>Necessità</option>
+    <option>Desideri</option>
     <option>Risparmio</option>
-    <option>Altro</option>
   </select>
 
   <button class="btn" id="addBtn">➕ Aggiungi spesa</button>
@@ -249,23 +237,27 @@ input:focus, select:focus {
   <input type="file" id="fileInput" accept="application/json">
 </div>
 
-<!-- RIEPILOGO -->
+<!-- RIEPILOGO 50/30/20 -->
 <div class="card">
-  <div class="summary">
-    <div class="sumBox">
-      <div class="sumLabel">Totale speso</div>
-      <div id="spentValue" class="sumValue">0 €</div>
-    </div>
-    <div class="sumBox">
-      <div class="sumLabel">Rimanente</div>
-      <div id="leftValue" class="sumValue positive">0 €</div>
-    </div>
+  <h3>Riepilogo 50 / 30 / 20</h3>
+
+  <div class="barGroup">
+    <div class="barLabel">Necessità (50%)</div>
+    <div class="barOuter"><div id="barNec" class="barInner barNec"></div></div>
+    <div id="textNec" class="percentText">0% usato</div>
   </div>
 
-  <div class="barOuter">
-    <div id="barInner" class="barInner"></div>
+  <div class="barGroup">
+    <div class="barLabel">Desideri (30%)</div>
+    <div class="barOuter"><div id="barDes" class="barInner barDes"></div></div>
+    <div id="textDes" class="percentText">0% usato</div>
   </div>
-  <div id="percentText" class="percentText">0% del budget usato</div>
+
+  <div class="barGroup">
+    <div class="barLabel">Risparmio (20%)</div>
+    <div class="barOuter"><div id="barRis" class="barInner barRis"></div></div>
+    <div id="textRis" class="percentText">0% usato</div>
+  </div>
 </div>
 
 <h2>Storico spese</h2>
@@ -280,10 +272,14 @@ const amountInput = document.getElementById("amountInput");
 const catInput = document.getElementById("catInput");
 const addBtn = document.getElementById("addBtn");
 
-const spentValue = document.getElementById("spentValue");
-const leftValue = document.getElementById("leftValue");
-const barInner = document.getElementById("barInner");
-const percentText = document.getElementById("percentText");
+const barNec = document.getElementById("barNec");
+const barDes = document.getElementById("barDes");
+const barRis = document.getElementById("barRis");
+
+const textNec = document.getElementById("textNec");
+const textDes = document.getElementById("textDes");
+const textRis = document.getElementById("textRis");
+
 const list = document.getElementById("list");
 
 const exportBtn = document.getElementById("exportBtn");
@@ -297,9 +293,7 @@ function loadState() {
   try {
     const raw = localStorage.getItem("budgetingState");
     if (raw) state = JSON.parse(raw);
-  } catch {
-    state = { budget: 0, entries: [] };
-  }
+  } catch {}
 }
 
 function saveState() {
@@ -309,16 +303,29 @@ function saveState() {
 function render() {
   if (state.budget > 0) budgetInput.value = state.budget;
 
-  const spent = state.entries.reduce((s, e) => s + e.amount, 0);
-  const left = state.budget - spent;
-  const percent = state.budget > 0 ? Math.min(100, Math.round((spent / state.budget) * 100)) : 0;
+  let nec = 0, des = 0, ris = 0;
 
-  spentValue.textContent = spent.toFixed(2) + " €";
-  leftValue.textContent = left.toFixed(2) + " €";
-  leftValue.className = "sumValue " + (left < 0 ? "negative" : "positive");
+  state.entries.forEach(e => {
+    if (e.cat === "Necessità") nec += e.amount;
+    if (e.cat === "Desideri") des += e.amount;
+    if (e.cat === "Risparmio") ris += e.amount;
+  });
 
-  barInner.style.width = percent + "%";
-  percentText.textContent = percent + "% del budget usato";
+  const limNec = state.budget * 0.50;
+  const limDes = state.budget * 0.30;
+  const limRis = state.budget * 0.20;
+
+  const pNec = limNec > 0 ? Math.min(100, Math.round((nec / limNec) * 100)) : 0;
+  const pDes = limDes > 0 ? Math.min(100, Math.round((des / limDes) * 100)) : 0;
+  const pRis = limRis > 0 ? Math.min(100, Math.round((ris / limRis) * 100)) : 0;
+
+  barNec.style.width = pNec + "%";
+  barDes.style.width = pDes + "%";
+  barRis.style.width = pRis + "%";
+
+  textNec.textContent = `${pNec}% usato (${nec.toFixed(2)}€ / ${limNec.toFixed(2)}€)`;
+  textDes.textContent = `${pDes}% usato (${des.toFixed(2)}€ / ${limDes.toFixed(2)}€)`;
+  textRis.textContent = `${pRis}% usato (${ris.toFixed(2)}€ / ${limRis.toFixed(2)}€)`;
 
   list.innerHTML = "";
   if (state.entries.length === 0) {
@@ -340,7 +347,7 @@ function render() {
         <div class="entryAmount">-${e.amount.toFixed(2)} €</div>
       </div>
 
-      <div class="entryMeta">📂 ${e.cat || "Senza categoria"} · ${e.date}</div>
+      <div class="entryMeta">📂 ${e.cat} · ${e.date}</div>
 
       <div class="barOuter">
         <div class="barInner" style="width:${percentEntry}%;"></div>
@@ -360,7 +367,7 @@ function addEntry() {
   const amount = parseFloat(amountInput.value);
   const cat = catInput.value;
 
-  if (!desc || isNaN(amount) || amount <= 0) return;
+  if (!desc || isNaN(amount) || amount <= 0 || !cat) return;
 
   const now = new Date();
   const dateStr = now.toLocaleDateString("it-IT");
