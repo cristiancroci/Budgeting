@@ -3,17 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Budgeting</title>
+<title>Budgeting 50/30/20</title>
 
 <style>
 :root {
   --bg: #f5f7fb;
   --card: #ffffff;
   --text: #222;
-
-  /* COLORI 50/30/20 */
-  --nec: #ff3b3b;   /* Necessità rosso pulsante */
-  --des: #3b7bff;   /* Desideri blu neon */
+  --nec: #ff3b3b;   /* Necessità rosso */
+  --des: #3b7bff;   /* Desideri blu */
   --ris: #00c96b;   /* Risparmio verde */
 }
 
@@ -64,6 +62,7 @@ input, select {
   font-size: .95rem;
   margin-bottom: 10px;
   transition: .2s;
+  box-sizing: border-box;
 }
 
 input:focus, select:focus {
@@ -89,7 +88,6 @@ input:focus, select:focus {
 }
 
 .btn-small {
-  width: auto;
   padding: 8px 14px;
   border-radius: 999px;
   border: none;
@@ -116,9 +114,7 @@ input:focus, select:focus {
   100% { background-position: 0% 50% }
 }
 
-/* ------------------------------
-   RIEPILOGO 50/30/20
---------------------------------*/
+/* Riepilogo 50/30/20 */
 .barGroup {
   margin-top: 14px;
 }
@@ -146,7 +142,6 @@ input:focus, select:focus {
   transition: width .3s ease;
 }
 
-/* COLORI BARRE 50/30/20 */
 .barNec { background: linear-gradient(90deg, var(--nec), #ff8a8a); box-shadow: 0 0 12px rgba(255,0,0,0.6); }
 .barDes { background: linear-gradient(90deg, var(--des), #8ab3ff); box-shadow: 0 0 12px rgba(0,80,255,0.6); }
 .barRis { background: linear-gradient(90deg, var(--ris), #7dffb8); box-shadow: 0 0 12px rgba(0,255,120,0.6); }
@@ -157,9 +152,7 @@ input:focus, select:focus {
   color: #555;
 }
 
-/* ------------------------------
-   LISTA SPESE
---------------------------------*/
+/* Lista spese */
 .entry {
   background: #fff;
   border-radius: 12px;
@@ -172,23 +165,23 @@ input:focus, select:focus {
 .entryTop {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 4px;
 }
 
-.entryDesc { font-weight: 600 }
-.entryAmount { font-weight: 600; color: var(--nec) }
+.entryDesc { font-weight: 600; }
+.entryAmount { font-weight: 600; color: var(--nec); }
 
 .entryMeta {
   font-size: .78rem;
   color: #777;
 }
 
-/* Icone stile B */
 .entryActions {
   display: flex;
   gap: 10px;
-  font-size: 1.2rem;
-  margin-top: 6px;
+  font-size: 1.1rem;
+  align-items: center;
 }
 
 .entryActions span {
@@ -202,7 +195,7 @@ input:focus, select:focus {
   transform: scale(1.15);
 }
 
-/* Barra luminosa per ogni voce */
+/* Barra per voce */
 .entry .barOuter {
   height: 12px;
   margin-top: 8px;
@@ -231,13 +224,14 @@ input:focus, select:focus {
 <div class="app">
 
 <h1>Budgeting</h1>
-<div class="subtitle">Metodo 50/30/20 con modifica ed eliminazione 🔥</div>
+<div class="subtitle">50/30/20 con entrate extra, modifica ed eliminazione</div>
 
-<!-- FORM -->
 <div class="card">
   <input id="budgetInput" type="number" placeholder="Budget mensile (€)">
-  <input id="extraInput" type="number" placeholder="Entrata extra (€)">
-  <button class="btn-small" id="addExtraBtn">➕ Aggiungi entrata</button>
+  <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
+    <input id="extraInput" type="number" placeholder="Entrata extra (€)" style="flex:1; margin-bottom:0;">
+    <button class="btn-small" id="addExtraBtn" type="button">➕ Entrata</button>
+  </div>
 
   <input id="descInput" placeholder="Descrizione spesa">
   <input id="amountInput" type="number" placeholder="Importo (€)">
@@ -248,20 +242,20 @@ input:focus, select:focus {
     <option>Risparmio</option>
   </select>
 
-  <button class="btn" id="addBtn">➕ Aggiungi spesa</button>
+  <button class="btn" id="addBtn" type="button">➕ Aggiungi spesa</button>
 
   <div class="btn-row">
-    <button class="btn-small" id="exportBtn">⬇️ Esporta</button>
-    <button class="btn-small" id="importBtn">⬆️ Importa</button>
-    <button class="btn-small" id="resetBtn">🗑 Reset</button>
+    <button class="btn-small" id="exportBtn" type="button">⬇️ Esporta</button>
+    <button class="btn-small" id="importBtn" type="button">⬆️ Importa</button>
+    <button class="btn-small" id="resetBtn" type="button">🗑 Reset</button>
   </div>
 
   <input type="file" id="fileInput" accept="application/json">
 </div>
 
-<!-- RIEPILOGO 50/30/20 -->
 <div class="card">
   <h3>Riepilogo 50 / 30 / 20</h3>
+  <div id="totalInfo" class="percentText" style="margin-bottom:8px;">Budget totale: 0€ (0 budget + 0 entrate)</div>
 
   <div class="barGroup">
     <div class="barLabel">Necessità (50%)</div>
@@ -285,4 +279,266 @@ input:focus, select:focus {
 <h2>Storico spese</h2>
 <div id="list"></div>
 
+<script>
+const budgetInput = document.getElementById("budgetInput");
+const extraInput = document.getElementById("extraInput");
+const addExtraBtn = document.getElementById("addExtraBtn");
+
+const descInput = document.getElementById("descInput");
+const amountInput = document.getElementById("amountInput");
+const catInput = document.getElementById("catInput");
+const addBtn = document.getElementById("addBtn");
+
+const barNec = document.getElementById("barNec");
+const barDes = document.getElementById("barDes");
+const barRis = document.getElementById("barRis");
+
+const textNec = document.getElementById("textNec");
+const textDes = document.getElementById("textDes");
+const textRis = document.getElementById("textRis");
+const totalInfo = document.getElementById("totalInfo");
+
+const list = document.getElementById("list");
+
+const exportBtn = document.getElementById("exportBtn");
+const importBtn = document.getElementById("importBtn");
+const resetBtn = document.getElementById("resetBtn");
+const fileInput = document.getElementById("fileInput");
+
+let state = {
+  budget: 0,
+  extra: 0,
+  entries: [] // {id, desc, amount, cat, date}
+};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem("budgetingState");
+    if (raw) state = JSON.parse(raw);
+  } catch {}
+}
+
+function saveState() {
+  localStorage.setItem("budgetingState", JSON.stringify(state));
+}
+
+function getTotalBudget() {
+  return (state.budget || 0) + (state.extra || 0);
+}
+
+function render() {
+  if (state.budget > 0) budgetInput.value = state.budget;
+  if (state.extra > 0) extraInput.value = "";
+
+  const totalBudget = getTotalBudget();
+  totalInfo.textContent = `Budget totale: ${totalBudget.toFixed(2)}€ (${(state.budget||0).toFixed(2)} budget + ${(state.extra||0).toFixed(2)} entrate)`;
+
+  let nec = 0, des = 0, ris = 0;
+  state.entries.forEach(e => {
+    if (e.cat === "Necessità") nec += e.amount;
+    if (e.cat === "Desideri") des += e.amount;
+    if (e.cat === "Risparmio") ris += e.amount;
+  });
+
+  const limNec = totalBudget * 0.50;
+  const limDes = totalBudget * 0.30;
+  const limRis = totalBudget * 0.20;
+
+  const pNec = limNec > 0 ? Math.min(100, Math.round((nec / limNec) * 100)) : 0;
+  const pDes = limDes > 0 ? Math.min(100, Math.round((des / limDes) * 100)) : 0;
+  const pRis = limRis > 0 ? Math.min(100, Math.round((ris / limRis) * 100)) : 0;
+
+  barNec.style.width = pNec + "%";
+  barDes.style.width = pDes + "%";
+  barRis.style.width = pRis + "%";
+
+  textNec.textContent = `${pNec}% usato (${nec.toFixed(2)}€ / ${limNec.toFixed(2)}€)`;
+  textDes.textContent = `${pDes}% usato (${des.toFixed(2)}€ / ${limDes.toFixed(2)}€)`;
+  textRis.textContent = `${pRis}% usato (${ris.toFixed(2)}€ / ${limRis.toFixed(2)}€)`;
+
+  list.innerHTML = "";
+  if (state.entries.length === 0) {
+    list.innerHTML = `<div class="empty">Nessuna spesa ancora.</div>`;
+    return;
+  }
+
+  state.entries.forEach((e, index) => {
+    const percentEntry = totalBudget > 0
+      ? Math.min(100, Math.round((e.amount / totalBudget) * 100))
+      : 0;
+
+    const div = document.createElement("div");
+    div.className = "entry";
+    div.dataset.index = index;
+
+    div.innerHTML = `
+      <div class="entryTop">
+        <div>
+          <div class="entryDesc">${e.desc}</div>
+          <div class="entryMeta">📂 ${e.cat} · ${e.date}</div>
+        </div>
+        <div class="entryActions">
+          <div class="entryAmount">-${e.amount.toFixed(2)} €</div>
+          <span class="edit" title="Modifica">✏️</span>
+          <span class="delete" title="Elimina">🗑</span>
+        </div>
+      </div>
+      <div class="barOuter">
+        <div class="barInner" style="width:${percentEntry}%;"></div>
+      </div>
+      <div class="percentText">${percentEntry}% del budget totale</div>
+    `;
+
+    list.appendChild(div);
+  });
+}
+
+function addEntry() {
+  const b = parseFloat(budgetInput.value);
+  if (!isNaN(b) && b >= 0) state.budget = b;
+
+  const desc = descInput.value.trim();
+  const amount = parseFloat(amountInput.value);
+  const cat = catInput.value;
+
+  if (!desc || isNaN(amount) || amount <= 0 || !cat) return;
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString("it-IT");
+
+  state.entries.push({
+    id: Date.now(),
+    desc,
+    amount,
+    cat,
+    date: dateStr
+  });
+
+  descInput.value = "";
+  amountInput.value = "";
+  catInput.value = "";
+
+  saveState();
+  render();
+}
+
+function addExtra() {
+  const extra = parseFloat(extraInput.value);
+  if (isNaN(extra) || extra <= 0) return;
+  state.extra += extra;
+  extraInput.value = "";
+  saveState();
+  render();
+}
+
+function handleEdit(index) {
+  const e = state.entries[index];
+  if (!e) return;
+
+  const newDesc = prompt("Modifica descrizione:", e.desc);
+  if (newDesc === null) return;
+
+  const newAmountStr = prompt("Modifica importo (€):", e.amount.toString());
+  if (newAmountStr === null) return;
+  const newAmount = parseFloat(newAmountStr);
+  if (isNaN(newAmount) || newAmount <= 0) return;
+
+  const newCat = prompt("Modifica categoria (Necessità / Desideri / Risparmio):", e.cat);
+  if (newCat === null) return;
+  const catTrim = newCat.trim();
+  if (!["Necessità","Desideri","Risparmio"].includes(catTrim)) return;
+
+  e.desc = newDesc.trim();
+  e.amount = newAmount;
+  e.cat = catTrim;
+
+  saveState();
+  render();
+}
+
+function handleDelete(index) {
+  const e = state.entries[index];
+  if (!e) return;
+  if (!confirm(`Eliminare la voce "${e.desc}" da ${e.amount.toFixed(2)}€?`)) return;
+  state.entries.splice(index, 1);
+  saveState();
+  render();
+}
+
+addBtn.addEventListener("click", addEntry);
+addExtraBtn.addEventListener("click", addExtra);
+
+budgetInput.addEventListener("change", () => {
+  const b = parseFloat(budgetInput.value);
+  if (!isNaN(b) && b >= 0) {
+    state.budget = b;
+    saveState();
+    render();
+  }
+});
+
+list.addEventListener("click", (e) => {
+  const entryDiv = e.target.closest(".entry");
+  if (!entryDiv) return;
+  const index = parseInt(entryDiv.dataset.index, 10);
+  if (e.target.classList.contains("edit")) {
+    handleEdit(index);
+  } else if (e.target.classList.contains("delete")) {
+    handleDelete(index);
+  }
+});
+
+/* EXPORT */
+exportBtn.onclick = () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  const date = new Date().toISOString().slice(0,10);
+  a.download = `budgeting-${date}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+/* IMPORT */
+importBtn.onclick = () => {
+  fileInput.value = "";
+  fileInput.click();
+};
+
+fileInput.onchange = () => {
+  const file = fileInput.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data || typeof data !== "object") return;
+      if (!Array.isArray(data.entries)) data.entries = [];
+      if (typeof data.budget !== "number") data.budget = 0;
+      if (typeof data.extra !== "number") data.extra = 0;
+      state = data;
+      saveState();
+      render();
+    } catch {}
+  };
+  reader.readAsText(file);
+};
+
+/* RESET */
+resetBtn.onclick = () => {
+  if (!confirm("Sei sicuro di voler cancellare tutto?")) return;
+  state = { budget: 0, extra: 0, entries: [] };
+  saveState();
+  render();
+};
+
+loadState();
+render();
+</script>
+
 </div>
+</body>
+</html>
