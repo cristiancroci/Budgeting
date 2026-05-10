@@ -1,254 +1,56 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-
 body {
-  background: radial-gradient(circle at top, #1f2933, #050816);
-  color: #f9fafb;
-  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background: #f2f2f2;
 }
 
-.container {
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 16px;
-}
-
-/* Titoli */
-h1 {
-  font-size: 24px;
-  margin: 12px 0 16px;
+h1, h2 {
   text-align: center;
 }
 
-h2 {
-  font-size: 18px;
-  margin: 20px 0 8px;
+.inputBox {
+  margin-bottom: 15px;
 }
 
-/* Semaforo salvataggio */
-.statusIndicator {
-  font-size: 14px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  display: inline-block;
-  margin-bottom: 8px;
-}
-
-.statusIndicator.ok {
-  background: rgba(16, 185, 129, 0.15);
-  color: #6ee7b7;
-}
-
-.statusIndicator.saving {
-  background: rgba(234, 179, 8, 0.15);
-  color: #facc15;
-}
-
-.statusIndicator.error {
-  background: rgba(239, 68, 68, 0.15);
-  color: #fecaca;
-}
-
-
-/* Box riepilogo */
-.summaryBox {
-  background: rgba(15, 23, 42, 0.9);
-  border-radius: 16px;
-  padding: 12px 14px;
-  margin-bottom: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
-  border: 1px solid rgba(148, 163, 184, 0.3);
-}
-
-.summaryBox h3 {
-  font-size: 16px;
-  margin-bottom: 8px;
-}
-
-.summaryItem {
-  font-size: 14px;
-  margin-bottom: 8px;
-}
-
-.summaryItem strong {
-  font-weight: 600;
-}
-
-.summaryItem:last-child {
-  margin-bottom: 0;
-}
-
-.summaryBox hr {
-  border: none;
-  border-top: 1px solid rgba(148, 163, 184, 0.4);
-  margin: 8px 0;
-}
-
-/* Riga per mese/anno */
-.row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-/* Input e select */
-input,
-select,
-textarea {
-  width: 100%;
-  padding: 8px 10px;
-  margin-bottom: 8px;
-  border-radius: 10px;
-  border: 1px solid rgba(148, 163, 184, 0.5);
-  background: rgba(15, 23, 42, 0.9);
-  color: #e5e7eb;
-  font-size: 14px;
-}
-
-input::placeholder,
-textarea::placeholder {
-  color: #6b7280;
-}
-
-textarea {
-  min-height: 60px;
-  resize: vertical;
-}
-
-/* Form */
-.form {
-  background: rgba(15, 23, 42, 0.9);
-  border-radius: 16px;
-  padding: 12px 14px;
-  margin-top: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
-  border: 1px solid rgba(148, 163, 184, 0.3);
-}
-
-/* Pulsanti */
-button {
-  border: none;
-  cursor: pointer;
-}
-
-.btn-crazy {
+input, select {
   width: 100%;
   padding: 10px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #f97316, #ec4899, #8b5cf6);
-  color: white;
-  font-weight: 600;
-  font-size: 15px;
-  box-shadow: 0 10px 25px rgba(248, 113, 113, 0.4);
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  border-radius: 8px;
+  border: 1px solid #aaa;
+  font-size: 16px;
 }
 
-.btn-crazy:active {
-  transform: translateY(1px);
-  box-shadow: 0 4px 12px rgba(248, 113, 113, 0.3);
-}
-
-.btn-orange,
-.btn-red {
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 13px;
-  color: white;
-}
-
-.btn-orange {
-  background: linear-gradient(90deg, #fb923c, #f97316);
-}
-
-.btn-red {
-  background: linear-gradient(90deg, #f97373, #ef4444);
-}
-
-/* Lista spese */
-#list {
-  margin-bottom: 40px;
-}
-
-.item {
-  background: rgba(15, 23, 42, 0.9);
-  border-radius: 14px;
-  padding: 10px 12px;
-  margin-bottom: 8px;
-  border: 1px solid rgba(148, 163, 184, 0.3);
-}
-
-.itemTitle {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 2px;
-}
-
-.itemSub {
-  font-size: 12px;
-  color: #9ca3af;
-  margin-bottom: 4px;
-}
-
-.itemNote {
-  font-size: 12px;
-  color: #e5e7eb;
-  margin-bottom: 6px;
-}
-
-.itemBtns {
-  display: flex;
-  gap: 6px;
-}
-
-/* Barre luminose */
-.barBox {
+button {
   width: 100%;
-  height: 12px;
-  background: #020617;
-  border-radius: 10px;
-  overflow: hidden;
-  margin: 6px 0;
+  padding: 12px;
+  font-size: 18px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  margin-top: 10px;
 }
 
-.bar {
-  height: 100%;
-  width: 0%;
-  transition: width 0.4s ease;
-  border-radius: 10px;
+.statusIndicator {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 20px;
 }
 
-/* Colori diversi */
-.barNec {
-  background: linear-gradient(90deg, #4facfe, #00f2fe);
-  box-shadow: 0 0 8px #4facfe;
+.statusIndicator.saving { color: orange; }
+.statusIndicator.ok { color: green; }
+.statusIndicator.error { color: red; }
+
+#historyList {
+  list-style: none;
+  padding: 0;
 }
 
-.barDes {
-  background: linear-gradient(90deg, #a855f7, #ec4899);
-  box-shadow: 0 0 8px #ec4899;
-}
-
-.barRis {
-  background: linear-gradient(90deg, #22c55e, #2dd4bf);
-  box-shadow: 0 0 8px #22c55e;
-}
-
-.barText {
+#historyList li {
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
   display: flex;
   justify-content: space-between;
-  font-size: 13px;
-  margin-top: 2px;
-}
-
-.barText .right {
-  text-align: right;
-}
-
-/* Top box */
-.topBox {
-  margin-top: 4px;
 }
