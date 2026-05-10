@@ -1,79 +1,75 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Budgeting</title>
-<link rel="stylesheet" href="style.css">
-</head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Budgeting</title>
 
+  <link rel="stylesheet" href="style.css">
+</head>
 <body>
 
-<div class="container">
+  <div class="container">
 
-  <h1>Budget Mensile</h1>
+    <!-- Semaforo -->
+    <div id="saveStatus" class="statusIndicator ok">🟢 Salvato</div>
 
-  <div class="entry">
-    <label>Budget:</label>
-    <input id="budgetInput" type="number" placeholder="0">
+    <h1>Budget Mensile 💰</h1>
+
+    <!-- ORDINAMENTO (opzionale, puoi toglierlo) -->
+    <div class="sortWrapper">
+      <select id="sortSelect" onchange="applySort()" class="sortMenu">
+        <option value="recent">📅 Recenti</option>
+        <option value="az">🔤 A → Z</option>
+        <option value="za">🔤 Z → A</option>
+      </select>
+    </div>
+
+    <!-- FORM COME VAULT -->
+    <div class="form">
+
+      <input id="budgetInput" type="number" placeholder="Budget mensile">
+      
+      <select id="monthSelect">
+        <option>Gennaio</option><option>Febbraio</option><option>Marzo</option>
+        <option>Aprile</option><option>Maggio</option><option>Giugno</option>
+        <option>Luglio</option><option>Agosto</option><option>Settembre</option>
+        <option>Ottobre</option><option>Novembre</option><option>Dicembre</option>
+      </select>
+
+      <select id="yearSelect">
+        <option>2025</option>
+        <option selected>2026</option>
+        <option>2027</option>
+      </select>
+
+      <input id="descInput" placeholder="Descrizione spesa">
+      <input id="amountInput" type="number" step="0.01" placeholder="Importo €">
+
+      <select id="categoryInput">
+        <option>Spesa</option>
+        <option>Auto</option>
+        <option>Bollette</option>
+        <option>Salute</option>
+        <option>Ristoranti</option>
+        <option>Tempo libero</option>
+        <option>Shopping</option>
+        <option>Hobby</option>
+        <option>Risparmio</option>
+        <option>Investimenti</option>
+      </select>
+
+      <textarea id="noteInput" placeholder="Note (opzionale)"></textarea>
+
+      <button id="addBtn" class="btn-crazy" onclick="addExpense()">➕ Aggiungi spesa</button>
+
+    </div>
+
+    <h2>Storico spese</h2>
+    <div id="list"></div>
+
   </div>
 
-  <div class="entry">
-    <label>Mese:</label>
-    <select id="monthSelect">
-      <option>Gennaio</option><option>Febbraio</option><option>Marzo</option>
-      <option>Aprile</option><option>Maggio</option><option>Giugno</option>
-      <option>Luglio</option><option>Agosto</option><option>Settembre</option>
-      <option>Ottobre</option><option>Novembre</option><option>Dicembre</option>
-    </select>
-  </div>
-
-  <div class="entry">
-    <label>Anno:</label>
-    <select id="yearSelect">
-      <option>2025</option>
-      <option selected>2026</option>
-      <option>2027</option>
-    </select>
-  </div>
-
-  <h2>Nuova Spesa</h2>
-
-  <div class="entry">
-    <label>Descrizione:</label>
-    <input id="descInput" type="text">
-  </div>
-
-  <div class="entry">
-    <label>Importo (€):</label>
-    <input id="amountInput" type="number" step="0.01">
-  </div>
-
-  <div class="entry">
-    <label>Categoria:</label>
-    <select id="categoryInput">
-      <option>Spesa</option>
-      <option>Auto</option>
-      <option>Bollette</option>
-      <option>Salute</option>
-      <option>Ristoranti</option>
-      <option>Tempo libero</option>
-      <option>Shopping</option>
-      <option>Hobby</option>
-      <option>Risparmio</option>
-      <option>Investimenti</option>
-    </select>
-  </div>
-
-  <button id="addBtn">Aggiungi spesa</button>
-
-  <h2>Storico</h2>
-  <ul id="expenseList"></ul>
-
-  <div id="saveStatus" class="statusIndicator">🟢 Pronto</div>
-
-</div>
-
-<script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
