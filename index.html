@@ -154,6 +154,8 @@ input:focus, select:focus {
   height: 100%;
   width: 0%;
   background: linear-gradient(90deg, #00c9a7, #f7b733, #ff6b6b);
+  background-size: 200% 200%;
+  animation: gradientShift 4s ease infinite;
   box-shadow: 0 0 12px rgba(255,107,107,0.7);
   transition: width .3s ease;
 }
@@ -187,15 +189,27 @@ input:focus, select:focus {
   color: #777;
 }
 
+.entry .barOuter {
+  height: 12px;
+  margin-top: 8px;
+}
+
+.entry .barInner {
+  height: 100%;
+  background: linear-gradient(90deg, #00c9a7, #f7b733, #ff6b6b);
+  background-size: 200% 200%;
+  animation: gradientShift 4s ease infinite;
+  box-shadow: 0 0 10px rgba(255,107,107,0.7);
+  transition: width .3s ease;
+}
+
 .empty {
   font-size: .85rem;
   color: #888;
   margin-top: 6px;
 }
 
-#fileInput {
-  display: none;
-}
+#fileInput { display: none; }
 </style>
 </head>
 
@@ -203,7 +217,7 @@ input:focus, select:focus {
 <div class="app">
 
 <h1>Budgeting</h1>
-<div class="subtitle">Tema chiaro, pulsanti cangianti, barre luminose e backup manuale 🔆</div>
+<div class="subtitle">Tema chiaro, pulsanti cangianti, barre luminose e backup 🔆</div>
 
 <!-- FORM -->
 <div class="card">
@@ -223,13 +237,15 @@ input:focus, select:focus {
     <option>Risparmio</option>
     <option>Altro</option>
   </select>
+
   <button class="btn" id="addBtn">➕ Aggiungi spesa</button>
 
   <div class="btn-row">
-    <button class="btn-small" id="exportBtn">⬇️ Esporta dati</button>
-    <button class="btn-small" id="importBtn">⬆️ Importa dati</button>
-    <button class="btn-small" id="resetBtn">🗑 Reset tutto</button>
+    <button class="btn-small" id="exportBtn">⬇️ Esporta</button>
+    <button class="btn-small" id="importBtn">⬆️ Importa</button>
+    <button class="btn-small" id="resetBtn">🗑 Reset</button>
   </div>
+
   <input type="file" id="fileInput" accept="application/json">
 </div>
 
@@ -311,15 +327,27 @@ function render() {
   }
 
   state.entries.forEach(e => {
+    const percentEntry = state.budget > 0 
+      ? Math.min(100, Math.round((e.amount / state.budget) * 100))
+      : 0;
+
     const div = document.createElement("div");
     div.className = "entry";
+
     div.innerHTML = `
       <div class="entryTop">
         <div class="entryDesc">${e.desc}</div>
         <div class="entryAmount">-${e.amount.toFixed(2)} €</div>
       </div>
+
       <div class="entryMeta">📂 ${e.cat || "Senza categoria"} · ${e.date}</div>
+
+      <div class="barOuter">
+        <div class="barInner" style="width:${percentEntry}%;"></div>
+      </div>
+      <div class="percentText">${percentEntry}% del budget</div>
     `;
+
     list.appendChild(div);
   });
 }
@@ -391,9 +419,7 @@ fileInput.onchange = () => {
       state = data;
       saveState();
       render();
-    } catch {
-      // se il file è sbagliato, semplicemente ignora
-    }
+    } catch {}
   };
   reader.readAsText(file);
 };
