@@ -16,7 +16,40 @@
 
     <h1>Budget Mensile 💰</h1>
 
-    <!-- ORDINAMENTO (opzionale, puoi toglierlo) -->
+    <!-- Riepilogo 50‑30‑20 -->
+    <div class="summaryBox">
+      <h3>Riepilogo 50‑30‑20</h3>
+
+      <div class="summaryItem">
+        <strong>Necessità (50%):</strong>
+        <span id="necUsed">0€</span> / <span id="necLimit">0€</span>
+        <div>Residuo: <span id="necLeft">0€</span></div>
+      </div>
+
+      <div class="summaryItem">
+        <strong>Desideri (30%):</strong>
+        <span id="desUsed">0€</span> / <span id="desLimit">0€</span>
+        <div>Residuo: <span id="desLeft">0€</span></div>
+      </div>
+
+      <div class="summaryItem">
+        <strong>Risparmio (20%):</strong>
+        <span id="risUsed">0€</span> / <span id="risLimit">0€</span>
+        <div>Residuo: <span id="risLeft">0€</span></div>
+      </div>
+
+      <hr>
+
+      <div class="summaryItem">
+        <strong>Totale spese:</strong> <span id="totaleSpese">0€</span>
+      </div>
+
+      <div class="summaryItem">
+        <strong>Residuo totale:</strong> <span id="residuoTotale">0€</span>
+      </div>
+    </div>
+
+    <!-- ORDINAMENTO -->
     <div class="sortWrapper">
       <select id="sortSelect" onchange="applySort()" class="sortMenu">
         <option value="recent">📅 Recenti</option>
@@ -25,11 +58,11 @@
       </select>
     </div>
 
-    <!-- FORM COME VAULT -->
+    <!-- FORM -->
     <div class="form">
 
       <input id="budgetInput" type="number" placeholder="Budget mensile">
-      
+
       <select id="monthSelect">
         <option>Gennaio</option><option>Febbraio</option><option>Marzo</option>
         <option>Aprile</option><option>Maggio</option><option>Giugno</option>
