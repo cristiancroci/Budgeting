@@ -309,6 +309,10 @@ function renderMonthSelector() {
   const sel = document.getElementById("meseSelect");
   sel.innerHTML = "";
 
+  if (Object.keys(state.mesi).length === 0) {
+    state.mesi[state.meseCorrente] = { budget: 0, extra: 0, entries: [] };
+  }
+
   Object.keys(state.mesi).sort().forEach(key => {
     const opt = document.createElement("option");
     opt.value = key;
@@ -490,8 +494,4 @@ document.getElementById("meseSelect").addEventListener("change", (e) => {
 });
 
 list.addEventListener("click", (e) => {
-  const entryDiv = e.target.closest(".entry");
-  if (!entryDiv) return;
-  const index = parseInt(entryDiv.dataset.index, 10);
-
-  if (e.target.classList.contains("edit")) handleEdit(index);
+  const entry
