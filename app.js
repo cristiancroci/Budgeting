@@ -1,5 +1,5 @@
 /* ============================
-   CONFIGURAZIONE
+   CONFIG
 ============================ */
 
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx48SC5rxyMwtcBYEuAtIEUTjEdJIJ3zF0ZaAZ8omRPNBu8vcokvw0kuRY1u2T4vmCRYw/exec";
@@ -14,72 +14,54 @@ let data = {
 let editIndex = null;
 let isSaving = false;
 
-const months = [
-  "Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno",
-  "Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"
-];
-
-let dailyChart = null;
-let categoryChart = null;
-
-/* ============================
-   BLOCCO USCITA DURANTE SALVATAGGIO
-============================ */
-
-window.addEventListener("beforeunload", function (e) {
-  if (isSaving) {
-    e.preventDefault();
-    e.returnValue = "";
-  }
-});
-
 /* ============================
    SEMAFORO
 ============================ */
 
 function setStatusSaving() {
   const s = document.getElementById("saveStatus");
-  if (!s) return;
   s.className = "statusIndicator saving";
   s.textContent = "🟡 Salvataggio...";
 }
 
 function setStatusOK() {
   const s = document.getElementById("saveStatus");
-  if (!s) return;
   s.className = "statusIndicator ok";
   s.textContent = "🟢 Salvato";
 }
 
 function setStatusError() {
   const s = document.getElementById("saveStatus");
-  if (!s) return;
   s.className = "statusIndicator error";
   s.textContent = "🔴 Errore";
 }
 
 /* ============================
-   CARICAMENTO DATI
+   LOAD DATA (come Vault)
 ============================ */
 
 async function loadData() {
   try {
     setStatusSaving();
     const res = await fetch(SCRIPT_URL + "?action=get");
-    const json = await res.json();
+    const text = await res.text();
 
-    data = json || data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      setStatusError();
+      return;
+    }
 
-    updateUIFromData();
+    updateUI();
     setStatusOK();
-  } catch (e) {
-    console.error("Errore loadData:", e);
+  } catch {
     setStatusError();
   }
 }
 
 /* ============================
-   SALVATAGGIO DATI
+   SAVE DATA (come Vault)
 ============================ */
 
 async function saveData() {
@@ -94,103 +76,166 @@ async function saveData() {
       body: JSON.stringify(data)
     });
 
-    const json = await res.json();
-
-    if (json && json.status === "ok") {
-      setStatusOK();
-    } else {
-      console.error("Risposta non OK:", json);
-      setStatusError();
-    }
-  } catch (e) {
-    console.error("Errore saveData:", e);
+    if (res.ok) setStatusOK();
+    else setStatusError();
+  } catch {
     setStatusError();
-  } finally {
-    isSaving = false;
   }
+
+  isSaving = false;
 }
 
 /* ============================
-   AGGIORNAMENTO UI
+   UPDATE UI
 ============================ */
 
-function updateUIFromData() {
+function updateUI() {
   document.getElementById("budgetInput").value = data.budget;
   document.getElementById("monthSelect").value = data.month;
   document.getElementById("yearSelect").value = data.year;
 
-  renderExpenses();
-  updateCharts();
+  renderList();
 }
 
 /* ============================
-   GESTIONE SPESE
+   ADD EXPENSE (come addEntry)
 ============================ */
 
 function addExpense() {
-  const desc = document.getElementById("descInput").value.trim();
-  const amount = parseFloat(document.getElementById("amountInput").value);
-  const category = document.getElementById("categoryInput").value.trim();
+  const desc = descInput.value.trim();
+  const amount = parseFloat(amountInput.value);
+  const category = categoryInput.value;
+  const note = noteInput.value.trim();
 
-  if (!desc || isNaN(amount) || amount <= 0) return;
+  if (!desc || isNaN(amount)) return;
 
-  data.expenses.push({
+  const entry = {
     desc,
     amount,
     category,
+    note,
     date: new Date().toISOString().split("T")[0]
-  });
+  };
 
-  renderExpenses();
+  if (editIndex === null) {
+    data.expenses.push(entry);
+  } else {
+    data.expenses[editIndex] = entry;
+    editIndex = null;
+    addBtn.textContent = "➕ Aggiungi spesa";
+  }
+
+  clearForm();
+  renderList();
   saveData();
 }
 
-function renderExpenses() {
-  const list = document.getElementById("expenseList");
+/* ============================
+   EDIT EXPENSE
+============================ */
+
+function editExpense(i) {
+  const e = data.expenses[i];
+
+  descInput.value = e.desc;
+  amountInput.value = e.amount;
+  categoryInput.value = e.category;
+  noteInput.value = e.note || "";
+
+  editIndex = i;
+  addBtn.textContent = "💾 Salva modifica";
+}
+
+/* ============================
+   DELETE EXPENSE
+============================ */
+
+function deleteExpense(i) {
+  data.expenses.splice(i, 1);
+  renderList();
+  saveData();
+}
+
+/* ============================
+   CLEAR FORM
+============================ */
+
+function clearForm() {
+  descInput.value = "";
+  amountInput.value = "";
+  noteInput.value = "";
+  categoryInput.value = "Spesa";
+}
+
+/* ============================
+   SORT (come Vault)
+============================ */
+
+function applySort() {
+  const mode = sortSelect.value;
+
+  if (mode === "recent") {
+    data.expenses.sort((a, b) => b.date.localeCompare(a.date));
+  }
+
+  if (mode === "az") {
+    data.expenses.sort((a, b) => a.desc.localeCompare(b.desc));
+  }
+
+  if (mode === "za") {
+    data.expenses.sort((a, b) => b.desc.localeCompare(a.desc));
+  }
+
+  renderList();
+}
+
+/* ============================
+   RENDER LIST (come Vault)
+============================ */
+
+function renderList() {
+  const list = document.getElementById("list");
   list.innerHTML = "";
 
-  data.expenses.forEach((exp, i) => {
-    const li = document.createElement("li");
-    li.className = "expenseItem";
-    li.innerHTML = `
-      <span>${exp.date} — ${exp.desc} (${exp.category})</span>
-      <strong>${exp.amount.toFixed(2)} €</strong>
+  data.expenses.forEach((e, i) => {
+    const div = document.createElement("div");
+    div.className = "item";
+
+    div.innerHTML = `
+      <div class="itemTitle">${e.desc} — ${e.amount}€</div>
+      <div class="itemSub">${e.category} • ${e.date}</div>
+      ${e.note ? `<div class="itemNote">${e.note}</div>` : ""}
+      <div class="itemBtns">
+        <button class="btn-orange" onclick="editExpense(${i})">✏️ Modifica</button>
+        <button class="btn-red" onclick="deleteExpense(${i})">🗑️ Elimina</button>
+      </div>
     `;
-    list.appendChild(li);
+
+    list.appendChild(div);
   });
 }
 
 /* ============================
-   CHARTS
+   LISTENERS
 ============================ */
 
-function updateCharts() {
-  // Qui puoi reinserire i grafici se li usi
-}
+budgetInput.addEventListener("change", () => {
+  data.budget = parseFloat(budgetInput.value) || 0;
+  saveData();
+});
+
+monthSelect.addEventListener("change", () => {
+  data.month = monthSelect.value;
+  saveData();
+});
+
+yearSelect.addEventListener("change", () => {
+  data.year = parseInt(yearSelect.value);
+  saveData();
+});
 
 /* ============================
-   EVENTI
-============================ */
-
-document.getElementById("budgetInput").addEventListener("change", () => {
-  data.budget = parseFloat(document.getElementById("budgetInput").value) || 0;
-  saveData();
-});
-
-document.getElementById("monthSelect").addEventListener("change", () => {
-  data.month = document.getElementById("monthSelect").value;
-  saveData();
-});
-
-document.getElementById("yearSelect").addEventListener("change", () => {
-  data.year = parseInt(document.getElementById("yearSelect").value);
-  saveData();
-});
-
-document.getElementById("addBtn").addEventListener("click", addExpense);
-
-/* ============================
-   AVVIO
+   START
 ============================ */
 
 loadData();
