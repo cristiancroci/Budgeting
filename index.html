@@ -4,196 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Budgeting 50/30/20</title>
-
-<style>
-:root {
-  --bg: #f5f7fb;
-  --card: #ffffff;
-  --text: #222;
-  --nec: #ff3b3b;
-  --des: #3b7bff;
-  --ris: #00c96b;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  background: radial-gradient(circle at top, #ffffff, #e3e7ff);
-  font-family: system-ui, sans-serif;
-  color: var(--text);
-  display: flex;
-  justify-content: center;
-}
-
-.app {
-  width: 100%;
-  max-width: 480px;
-  padding: 20px 16px 40px;
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 6px;
-  font-size: 1.7rem;
-}
-
-.subtitle {
-  text-align: center;
-  font-size: .9rem;
-  color: #666;
-  margin-bottom: 20px;
-}
-
-.card {
-  background: var(--card);
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 18px;
-  box-shadow: 0 12px 28px rgba(0,0,0,0.06);
-  border: 1px solid rgba(0,0,0,0.04);
-}
-
-input, select {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid #d0d4f0;
-  background: #f9f9ff;
-  font-size: .95rem;
-  margin-bottom: 10px;
-  transition: .2s;
-  box-sizing: border-box;
-}
-
-input:focus, select:focus {
-  border-color: #6a5acd;
-  box-shadow: 0 0 0 2px rgba(106,90,205,0.2);
-  background: #fff;
-}
-
-.btn {
-  width: 100%;
-  padding: 12px;
-  border-radius: 999px;
-  border: none;
-  color: white;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  background: linear-gradient(120deg, #ff6b6b, #f7b733, #00c9a7, #6a5acd);
-  background-size: 300% 300%;
-  animation: gradientShift 6s ease infinite;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.12);
-  margin-top: 4px;
-}
-
-.btn-small {
-  padding: 8px 14px;
-  border-radius: 999px;
-  border: none;
-  color: white;
-  font-weight: 500;
-  font-size: .85rem;
-  cursor: pointer;
-  background: linear-gradient(120deg, #00c96b, #3b7bff);
-  background-size: 200% 200%;
-  animation: gradientShift 5s ease infinite;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
-}
-
-.btn-row {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 8px;
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50% }
-  50% { background-position: 100% 50% }
-  100% { background-position: 0% 50% }
-}
-
-/* Riepilogo 50/30/20 */
-.barGroup { margin-top: 14px; }
-.barLabel { font-size: .85rem; margin-bottom: 4px; color: #555; }
-
-.barOuter {
-  width: 100%;
-  height: 16px;
-  border-radius: 999px;
-  overflow: hidden;
-  background: #e4e7ff;
-  box-shadow: inset 0 0 6px rgba(0,0,0,0.15);
-}
-
-.barInner {
-  height: 100%;
-  width: 0%;
-  background-size: 200% 200%;
-  animation: gradientShift 4s ease infinite;
-  transition: width .3s ease;
-}
-
-.barNec { background: linear-gradient(90deg, var(--nec), #ff8a8a); }
-.barDes { background: linear-gradient(90deg, var(--des), #8ab3ff); }
-.barRis { background: linear-gradient(90deg, var(--ris), #7dffb8); }
-
-.percentText { font-size: .8rem; margin-top: 4px; color: #555; }
-
-/* Lista spese */
-.entry {
-  background: #fff;
-  border-radius: 12px;
-  padding: 10px;
-  margin-bottom: 8px;
-  border: 1px solid #e4e6f5;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.04);
-}
-
-.entryTop {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.entryDesc { font-weight: 600; }
-.entryAmount { font-weight: 600; color: var(--nec); }
-
-.entryMeta { font-size: .78rem; color: #777; }
-
-.entryActions {
-  display: flex;
-  gap: 10px;
-  font-size: 1.1rem;
-  align-items: center;
-}
-
-.entryActions span {
-  cursor: pointer;
-  opacity: 0.7;
-  transition: .2s;
-}
-
-.entryActions span:hover {
-  opacity: 1;
-  transform: scale(1.15);
-}
-
-.entry .barOuter { height: 12px; margin-top: 8px; }
-
-.entry .barInner {
-  height: 100%;
-  background: linear-gradient(90deg, #00c9a7, #f7b733, #ff6b6b);
-  background-size: 200% 200%;
-  animation: gradientShift 4s ease infinite;
-  transition: width .3s ease;
-}
-
-.empty { font-size: .85rem; color: #888; margin-top: 6px; }
-
-#fileInput { display: none; }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -205,12 +16,17 @@ input:focus, select:focus {
 <!-- SELETTORE MESE -->
 <div style="margin-bottom:15px;">
   <label style="font-size:.9rem; color:#555;">📅 Mese:</label>
-  <select id="meseSelect" style="width:100%; padding:10px; border-radius:10px; border:1px solid #d0d4f0; background:#f9f9ff;"></select>
+  <select id="meseSelect"></select>
+
+  <button class="btn-small" id="addMonthBtn" type="button" style="margin-top:10px;">
+    ➕ Aggiungi mese
+  </button>
 </div>
 
 <!-- FORM -->
 <div class="card">
   <input id="budgetInput" type="number" placeholder="Budget mensile (€)">
+  
   <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
     <input id="extraInput" type="number" placeholder="Entrata extra (€)" style="flex:1; margin-bottom:0;">
     <button class="btn-small" id="addExtraBtn" type="button">➕ Entrata</button>
@@ -218,6 +34,7 @@ input:focus, select:focus {
 
   <input id="descInput" placeholder="Descrizione spesa">
   <input id="amountInput" type="number" placeholder="Importo (€)">
+  
   <select id="catInput">
     <option value="">Categoria</option>
     <option>Necessità</option>
@@ -310,10 +127,6 @@ function renderMonthSelector() {
   const sel = document.getElementById("meseSelect");
   sel.innerHTML = "";
 
-  if (Object.keys(state.mesi).length === 0) {
-    state.mesi[state.meseCorrente] = { budget: 0, extra: 0, entries: [] };
-  }
-
   Object.keys(state.mesi).sort().forEach(key => {
     const opt = document.createElement("option");
     opt.value = key;
@@ -321,6 +134,29 @@ function renderMonthSelector() {
     if (key === state.meseCorrente) opt.selected = true;
     sel.appendChild(opt);
   });
+}
+
+/* ------------------------------
+   AGGIUNGI MESE
+--------------------------------*/
+function addMonth() {
+  const keys = Object.keys(state.mesi).sort();
+  const last = keys[keys.length - 1];
+
+  let [year, month] = last.split("-").map(n => parseInt(n));
+  month++;
+  if (month > 12) {
+    month = 1;
+    year++;
+  }
+
+  const newKey = year + "-" + String(month).padStart(2, "0");
+
+  state.mesi[newKey] = { budget: 0, extra: 0, entries: [] };
+  state.meseCorrente = newKey;
+
+  saveState();
+  render();
 }
 
 /* ------------------------------
@@ -401,106 +237,14 @@ function render() {
 }
 
 /* ------------------------------
-   ACTIONS
---------------------------------*/
-function addEntry() {
-  const desc = descInput.value.trim();
-  const amount = parseFloat(amountInput.value);
-  const cat = catInput.value;
-
-  if (!desc || isNaN(amount) || amount <= 0 || !cat) return;
-
-  const now = new Date();
-  const dateStr = now.toLocaleDateString("it-IT");
-
-  mese().entries.push({
-    id: Date.now(),
-    desc,
-    amount,
-    cat,
-    date: dateStr
-  });
-
-  descInput.value = "";
-  amountInput.value = "";
-  catInput.value = "";
-
-  saveState();
-  render();
-}
-
-function addExtra() {
-  const extra = parseFloat(extraInput.value);
-  if (isNaN(extra) || extra <= 0) return;
-  mese().extra += extra;
-  extraInput.value = "";
-  saveState();
-  render();
-}
-
-function handleEdit(index) {
-  const e = mese().entries[index];
-  if (!e) return;
-
-  const newDesc = prompt("Modifica descrizione:", e.desc);
-  if (newDesc === null) return;
-
-  const newAmountStr = prompt("Modifica importo (€):", e.amount);
-  if (newAmountStr === null) return;
-  const newAmount = parseFloat(newAmountStr);
-  if (isNaN(newAmount) || newAmount <= 0) return;
-
-  const newCat = prompt("Modifica categoria (Necessità / Desideri / Risparmio):", e.cat);
-  if (newCat === null) return;
-  if (!["Necessità","Desideri","Risparmio"].includes(newCat.trim())) return;
-
-  e.desc = newDesc.trim();
-  e.amount = newAmount;
-  e.cat = newCat.trim();
-
-  saveState();
-  render();
-}
-
-function handleDelete(index) {
-  const e = mese().entries[index];
-  if (!e) return;
-  if (!confirm(`Eliminare "${e.desc}"?`)) return;
-  mese().entries.splice(index, 1);
-  saveState();
-  render();
-}
-
-/* ------------------------------
-   RIFERIMENTI DOM
---------------------------------*/
-const budgetInput = document.getElementById("budgetInput");
-const extraInput = document.getElementById("extraInput");
-const addExtraBtn = document.getElementById("addExtraBtn");
-const descInput = document.getElementById("descInput");
-const amountInput = document.getElementById("amountInput");
-const catInput = document.getElementById("catInput");
-const addBtn = document.getElementById("addBtn");
-
-const barNec = document.getElementById("barNec");
-const barDes = document.getElementById("barDes");
-const barRis = document.getElementById("barRis");
-const textNec = document.getElementById("textNec");
-const textDes = document.getElementById("textDes");
-const textRis = document.getElementById("textRis");
-
-const exportBtn = document.getElementById("exportBtn");
-const importBtn = document.getElementById("importBtn");
-const fileInput = document.getElementById("fileInput");
-const list = document.getElementById("list");
-
-/* ------------------------------
    EVENTI
 --------------------------------*/
-addBtn.onclick = addEntry;
-addExtraBtn.onclick = addExtra;
+document.getElementById("addMonthBtn").onclick = addMonth;
 
-budgetInput.onchange = () => {
+document.getElementById("addBtn").onclick = addEntry;
+document.getElementById("addExtraBtn").onclick = addExtra;
+
+document.getElementById("budgetInput").onchange = () => {
   const b = parseFloat(budgetInput.value);
   if (!isNaN(b) && b >= 0) {
     mese().budget = b;
@@ -517,7 +261,7 @@ document.getElementById("meseSelect").addEventListener("change", (e) => {
   render();
 });
 
-list.addEventListener("click", (e) => {
+document.getElementById("list").addEventListener("click", (e) => {
   const entryDiv = e.target.closest(".entry");
   if (!entryDiv) return;
   const index = parseInt(entryDiv.dataset.index, 10);
@@ -532,7 +276,7 @@ list.addEventListener("click", (e) => {
 /* ------------------------------
    EXPORT
 --------------------------------*/
-exportBtn.onclick = () => {
+document.getElementById("exportBtn").onclick = () => {
   const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -548,12 +292,12 @@ exportBtn.onclick = () => {
 /* ------------------------------
    IMPORT
 --------------------------------*/
-importBtn.onclick = () => {
+document.getElementById("importBtn").onclick = () => {
   fileInput.value = "";
   fileInput.click();
 };
 
-fileInput.onchange = () => {
+document.getElementById("fileInput").onchange = () => {
   const file = fileInput.files[0];
   if (!file) return;
   const reader = new FileReader();
