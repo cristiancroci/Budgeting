@@ -3,124 +3,68 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Budgeting 50-30-20</title>
-
+  <title>Budgeting App</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
+  <h1>Budgeting</h1>
 
-  <div class="container">
+  <div id="saveStatus" class="statusIndicator">🟢 Pronto</div>
 
-    <!-- Semaforo salvataggio (solo Drive, come Vault) -->
-    <div id="saveStatus" class="statusIndicator ok">🟢 Salvato</div>
-
-    <h1>Budget Mensile 💰</h1>
-
-    <!-- BUDGET -->
-    <div class="summaryBox topBox">
-      <h3>Budget del mese</h3>
-
-      <div class="row">
-        <select id="monthSelect">
-          <option>Gennaio</option><option>Febbraio</option><option>Marzo</option>
-          <option>Aprile</option><option>Maggio</option><option>Giugno</option>
-          <option>Luglio</option><option>Agosto</option><option>Settembre</option>
-          <option>Ottobre</option><option>Novembre</option><option>Dicembre</option>
-        </select>
-
-        <select id="yearSelect">
-          <option>2025</option>
-          <option selected>2026</option>
-          <option>2027</option>
-        </select>
-      </div>
-
-      <input id="budgetInput" type="number" placeholder="Budget mensile (€)">
-    </div>
-
-    <!-- RIEPILOGO 50‑30‑20 -->
-    <div class="summaryBox">
-
-      <h3>Riepilogo 50‑30‑20</h3>
-
-      <!-- NECESSITÀ -->
-      <div class="summaryItem">
-        <strong>Necessità (50%)</strong>
-        <div class="barBox">
-          <div id="barNec" class="bar barNec"></div>
-        </div>
-        <div class="barText">
-          <span id="necUsed">0€</span> / <span id="necLimit">0€</span>
-          <span class="right">Residuo: <span id="necLeft">0€</span></span>
-        </div>
-      </div>
-
-      <!-- DESIDERI -->
-      <div class="summaryItem">
-        <strong>Desideri (30%)</strong>
-        <div class="barBox">
-          <div id="barDes" class="bar barDes"></div>
-        </div>
-        <div class="barText">
-          <span id="desUsed">0€</span> / <span id="desLimit">0€</span>
-          <span class="right">Residuo: <span id="desLeft">0€</span></span>
-        </div>
-      </div>
-
-      <!-- RISPARMIO -->
-      <div class="summaryItem">
-        <strong>Risparmio (20%)</strong>
-        <div class="barBox">
-          <div id="barRis" class="bar barRis"></div>
-        </div>
-        <div class="barText">
-          <span id="risUsed">0€</span> / <span id="risLimit">0€</span>
-          <span class="right">Residuo: <span id="risLeft">0€</span></span>
-        </div>
-      </div>
-
-      <hr>
-
-      <div class="summaryItem">
-        <strong>Totale spese:</strong> <span id="totaleSpese">0€</span>
-      </div>
-
-      <div class="summaryItem">
-        <strong>Residuo totale:</strong> <span id="residuoTotale">0€</span>
-      </div>
-
-    </div>
-
-    <!-- FORM SPESE -->
-    <div class="form">
-
-      <input id="descInput" placeholder="Descrizione spesa">
-      <input id="amountInput" type="number" step="0.01" placeholder="Importo €">
-
-      <select id="categoryInput">
-        <option>Spesa</option>
-        <option>Auto</option>
-        <option>Bollette</option>
-        <option>Salute</option>
-        <option>Ristoranti</option>
-        <option>Tempo libero</option>
-        <option>Shopping</option>
-        <option>Hobby</option>
-        <option>Risparmio</option>
-        <option>Investimenti</option>
-      </select>
-
-      <textarea id="noteInput" placeholder="Note (opzionale)"></textarea>
-
-      <button id="addBtn" class="btn-crazy" onclick="addExpense()">➕ Aggiungi spesa</button>
-
-    </div>
-
-    <h2>Storico spese</h2>
-    <div id="list"></div>
-
+  <div class="inputBox">
+    <label>Budget mensile</label>
+    <input type="number" id="budgetInput" placeholder="0">
   </div>
+
+  <div class="inputBox">
+    <label>Mese</label>
+    <select id="monthSelect">
+      <option>Gennaio</option><option>Febbraio</option><option>Marzo</option>
+      <option>Aprile</option><option>Maggio</option><option>Giugno</option>
+      <option>Luglio</option><option>Agosto</option><option>Settembre</option>
+      <option>Ottobre</option><option>Novembre</option><option>Dicembre</option>
+    </select>
+  </div>
+
+  <div class="inputBox">
+    <label>Anno</label>
+    <input type="number" id="yearInput" value="2026">
+  </div>
+
+  <h2>Nuova Spesa</h2>
+
+  <div class="inputBox">
+    <label>Descrizione</label>
+    <input type="text" id="descInput">
+  </div>
+
+  <div class="inputBox">
+    <label>Categoria</label>
+    <select id="catInput">
+      <option>Spesa</option>
+      <option>Bollette</option>
+      <option>Auto</option>
+      <option>Salute</option>
+      <option>Shopping</option>
+      <option>Tempo libero</option>
+      <option>Ristoranti</option>
+      <option>Hobby</option>
+      <option>Risparmio</option>
+      <option>Investimenti</option>
+    </select>
+  </div>
+
+  <div class="inputBox">
+    <label>Importo</label>
+    <input type="number" id="amountInput">
+  </div>
+
+  <button id="addBtn">➕ Aggiungi</button>
+
+  <h2>Storico</h2>
+  <ul id="historyList"></ul>
 
   <script src="app.js"></script>
 </body>
