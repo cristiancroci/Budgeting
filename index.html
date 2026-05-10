@@ -4,71 +4,87 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Budgeting 50/30/20</title>
-<link rel="stylesheet" href="style.css">
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--text:#222;--nec:#ff3b3b;--des:#3b7bff;--ris:#00c96b}
+body{margin:0;padding:0;background:radial-gradient(circle at top,#fff,#e3e7ff);font-family:system-ui,sans-serif;color:var(--text);display:flex;justify-content:center}
+.app{width:100%;max-width:480px;padding:20px 16px 40px}
+h1{text-align:center;margin-bottom:6px;font-size:1.7rem}
+.subtitle{text-align:center;font-size:.9rem;color:#666;margin-bottom:20px}
+.card{background:var(--card);border-radius:16px;padding:16px;margin-bottom:18px;box-shadow:0 12px 28px rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.04)}
+input,select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #d0d4f0;background:#f9f9ff;font-size:.95rem;margin-bottom:10px;transition:.2s;box-sizing:border-box}
+input:focus,select:focus{border-color:#6a5acd;box-shadow:0 0 0 2px rgba(106,90,205,.2);background:#fff}
+.btn{width:100%;padding:12px;border-radius:999px;border:none;color:#fff;font-weight:600;font-size:1rem;cursor:pointer;background:linear-gradient(120deg,#ff6b6b,#f7b733,#00c9a7,#6a5acd);background-size:300% 300%;animation:gradientShift 6s ease infinite;box-shadow:0 10px 20px rgba(0,0,0,.12);margin-top:4px}
+.btn-small{padding:8px 14px;border-radius:999px;border:none;color:#fff;font-weight:500;font-size:.85rem;cursor:pointer;background:linear-gradient(120deg,#00c96b,#3b7bff);background-size:200% 200%;animation:gradientShift 5s ease infinite;box-shadow:0 6px 14px rgba(0,0,0,.12)}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+@keyframes gradientShift{0%{background-position:0 50%}50%{background-position:100% 50%}100%{background-position:0 50%}}
+.barGroup{margin-top:14px}
+.barLabel{font-size:.85rem;margin-bottom:4px;color:#555}
+.barOuter{width:100%;height:16px;border-radius:999px;overflow:hidden;background:#e4e7ff;box-shadow:inset 0 0 6px rgba(0,0,0,.15)}
+.barInner{height:100%;width:0;background-size:200% 200%;animation:gradientShift 4s ease infinite;transition:width .3s}
+.barNec{background:linear-gradient(90deg,var(--nec),#ff8a8a)}
+.barDes{background:linear-gradient(90deg,var(--des),#8ab3ff)}
+.barRis{background:linear-gradient(90deg,var(--ris),#7dffb8)}
+.percentText{font-size:.8rem;margin-top:4px;color:#555}
+.entry{background:#fff;border-radius:12px;padding:10px;margin-bottom:8px;border:1px solid #e4e6f5;box-shadow:0 6px 14px rgba(0,0,0,.04)}
+.entryTop{display:flex;justify-content:space-between;align-items:center}
+.entryDesc{font-weight:600}
+.entryAmount{font-weight:600;color:var(--nec)}
+.entryMeta{font-size:.78rem;color:#777}
+.entryActions{display:flex;gap:10px;font-size:1.1rem;align-items:center}
+.entryActions span{cursor:pointer;opacity:.7;transition:.2s}
+.entryActions span:hover{opacity:1;transform:scale(1.15)}
+.entry .barOuter{height:12px;margin-top:8px}
+.entry .barInner{height:100%;background:linear-gradient(90deg,#00c9a7,#f7b733,#ff6b6b);background-size:200% 200%;animation:gradientShift 4s ease infinite;transition:width .3s}
+.empty{font-size:.85rem;color:#888;margin-top:6px}
+#fileInput{display:none}
+</style>
 </head>
-
 <body>
 <div class="app">
-
 <h1>Budgeting</h1>
 <div class="subtitle">50/30/20 con mesi, entrate extra, modifica ed eliminazione</div>
 
-<!-- SELETTORE MESE -->
 <div style="margin-bottom:15px;">
-  <label style="font-size:.9rem; color:#555;">📅 Mese:</label>
+  <label style="font-size:.9rem;color:#555;">📅 Mese:</label>
   <select id="meseSelect"></select>
-
-  <button class="btn-small" id="addMonthBtn" type="button" style="margin-top:10px;">
-    ➕ Aggiungi mese
-  </button>
+  <button class="btn-small" id="addMonthBtn" type="button" style="margin-top:10px;">➕ Aggiungi mese</button>
 </div>
 
-<!-- FORM -->
 <div class="card">
   <input id="budgetInput" type="number" placeholder="Budget mensile (€)">
-  
-  <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
-    <input id="extraInput" type="number" placeholder="Entrata extra (€)" style="flex:1; margin-bottom:0;">
+  <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+    <input id="extraInput" type="number" placeholder="Entrata extra (€)" style="flex:1;margin-bottom:0;">
     <button class="btn-small" id="addExtraBtn" type="button">➕ Entrata</button>
   </div>
-
   <input id="descInput" placeholder="Descrizione spesa">
   <input id="amountInput" type="number" placeholder="Importo (€)">
-  
   <select id="catInput">
     <option value="">Categoria</option>
     <option>Necessità</option>
     <option>Desideri</option>
     <option>Risparmio</option>
   </select>
-
   <button class="btn" id="addBtn" type="button">➕ Aggiungi spesa</button>
-
   <div class="btn-row">
     <button class="btn-small" id="exportBtn" type="button">⬇️ Esporta</button>
     <button class="btn-small" id="importBtn" type="button">⬆️ Importa</button>
   </div>
-
   <input type="file" id="fileInput" accept="application/json">
 </div>
 
-<!-- RIEPILOGO -->
 <div class="card">
   <h3>Riepilogo 50 / 30 / 20</h3>
   <div id="totalInfo" class="percentText" style="margin-bottom:8px;">Budget totale: 0€</div>
-
   <div class="barGroup">
     <div class="barLabel">Necessità (50%)</div>
     <div class="barOuter"><div id="barNec" class="barInner barNec"></div></div>
     <div id="textNec" class="percentText">0% usato</div>
   </div>
-
   <div class="barGroup">
     <div class="barLabel">Desideri (30%)</div>
     <div class="barOuter"><div id="barDes" class="barInner barDes"></div></div>
     <div id="textDes" class="percentText">0% usato</div>
   </div>
-
   <div class="barGroup">
     <div class="barLabel">Risparmio (20%)</div>
     <div class="barOuter"><div id="barRis" class="barInner barRis"></div></div>
@@ -80,141 +96,103 @@
 <div id="list"></div>
 
 <script>
-/* ------------------------------
-   STRUTTURA DATI
---------------------------------*/
-let state = {
-  meseCorrente: "",
-  mesi: {}
-};
+let state={meseCorrente:"",mesi:{}};
 
-/* ------------------------------
-   UTILS
---------------------------------*/
-function getCurrentMonthKey() {
-  const d = new Date();
-  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0");
+function getCurrentMonthKey(){
+  const d=new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
 }
+function mese(){return state.mesi[state.meseCorrente];}
 
-function mese() {
-  return state.mesi[state.meseCorrente];
+function loadState(){
+  try{
+    const raw=localStorage.getItem("budgetingState");
+    if(raw) state=JSON.parse(raw);
+  }catch(e){}
+  if(!state.meseCorrente) state.meseCorrente=getCurrentMonthKey();
+  if(!state.mesi[state.meseCorrente]) state.mesi[state.meseCorrente]={budget:0,extra:0,entries:[]};
 }
+function saveState(){localStorage.setItem("budgetingState",JSON.stringify(state));}
 
-/* ------------------------------
-   LOAD / SAVE
---------------------------------*/
-function loadState() {
-  try {
-    const raw = localStorage.getItem("budgetingState");
-    if (raw) state = JSON.parse(raw);
-  } catch {}
-
-  if (!state.meseCorrente) state.meseCorrente = getCurrentMonthKey();
-
-  if (!state.mesi[state.meseCorrente]) {
-    state.mesi[state.meseCorrente] = { budget: 0, extra: 0, entries: [] };
-  }
-}
-
-function saveState() {
-  localStorage.setItem("budgetingState", JSON.stringify(state));
-}
-
-/* ------------------------------
-   RENDER MESE SELECTOR
---------------------------------*/
-function renderMonthSelector() {
-  const sel = document.getElementById("meseSelect");
-  sel.innerHTML = "";
-
-  Object.keys(state.mesi).sort().forEach(key => {
-    const opt = document.createElement("option");
-    opt.value = key;
-    opt.textContent = key;
-    if (key === state.meseCorrente) opt.selected = true;
+function renderMonthSelector(){
+  const sel=document.getElementById("meseSelect");
+  sel.innerHTML="";
+  Object.keys(state.mesi).sort().forEach(key=>{
+    const opt=document.createElement("option");
+    opt.value=key;opt.textContent=key;
+    if(key===state.meseCorrente) opt.selected=true;
     sel.appendChild(opt);
   });
 }
 
-/* ------------------------------
-   AGGIUNGI MESE
---------------------------------*/
-function addMonth() {
-  const keys = Object.keys(state.mesi).sort();
-  const last = keys[keys.length - 1];
-
-  let [year, month] = last.split("-").map(n => parseInt(n));
-  month++;
-  if (month > 12) {
-    month = 1;
-    year++;
-  }
-
-  const newKey = year + "-" + String(month).padStart(2, "0");
-
-  state.mesi[newKey] = { budget: 0, extra: 0, entries: [] };
-  state.meseCorrente = newKey;
-
-  saveState();
-  render();
+function addMonth(){
+  const keys=Object.keys(state.mesi).sort();
+  const last=keys[keys.length-1]||getCurrentMonthKey();
+  let [year,month]=last.split("-").map(n=>parseInt(n));
+  month++;if(month>12){month=1;year++;}
+  const newKey=year+"-"+String(month).padStart(2,"0");
+  if(!state.mesi[newKey]) state.mesi[newKey]={budget:0,extra:0,entries:[]};
+  state.meseCorrente=newKey;
+  saveState();render();
 }
 
-/* ------------------------------
-   RENDER
---------------------------------*/
-function getTotalBudget() {
-  return (mese().budget || 0) + (mese().extra || 0);
-}
+function getTotalBudget(){return (mese().budget||0)+(mese().extra||0);}
 
-function render() {
+const budgetInput=document.getElementById("budgetInput");
+const extraInput=document.getElementById("extraInput");
+const descInput=document.getElementById("descInput");
+const amountInput=document.getElementById("amountInput");
+const catInput=document.getElementById("catInput");
+const barNec=document.getElementById("barNec");
+const barDes=document.getElementById("barDes");
+const barRis=document.getElementById("barRis");
+const textNec=document.getElementById("textNec");
+const textDes=document.getElementById("textDes");
+const textRis=document.getElementById("textRis");
+const list=document.getElementById("list");
+const fileInput=document.getElementById("fileInput");
+const meseSelect=document.getElementById("meseSelect");
+
+function render(){
   renderMonthSelector();
-
-  const totalBudget = getTotalBudget();
-  document.getElementById("totalInfo").textContent =
+  const totalBudget=getTotalBudget();
+  document.getElementById("totalInfo").textContent=
     `Budget totale: ${totalBudget.toFixed(2)}€ (${mese().budget.toFixed(2)} budget + ${mese().extra.toFixed(2)} entrate)`;
+  budgetInput.value=mese().budget||"";
+  extraInput.value="";
 
-  document.getElementById("budgetInput").value = mese().budget || "";
-  document.getElementById("extraInput").value = "";
-
-  let nec = 0, des = 0, ris = 0;
-  mese().entries.forEach(e => {
-    if (e.cat === "Necessità") nec += e.amount;
-    if (e.cat === "Desideri") des += e.amount;
-    if (e.cat === "Risparmio") ris += e.amount;
+  let nec=0,des=0,ris=0;
+  mese().entries.forEach(e=>{
+    if(e.cat==="Necessità") nec+=e.amount;
+    if(e.cat==="Desideri") des+=e.amount;
+    if(e.cat==="Risparmio") ris+=e.amount;
   });
 
-  const limNec = totalBudget * 0.50;
-  const limDes = totalBudget * 0.30;
-  const limRis = totalBudget * 0.20;
+  const limNec=totalBudget*0.5,limDes=totalBudget*0.3,limRis=totalBudget*0.2;
+  const pNec=limNec?Math.min(100,Math.round(nec/limNec*100)):0;
+  const pDes=limDes?Math.min(100,Math.round(des/limDes*100)):0;
+  const pRis=limRis?Math.min(100,Math.round(ris/limRis*100)):0;
 
-  const pNec = limNec ? Math.min(100, Math.round(nec / limNec * 100)) : 0;
-  const pDes = limDes ? Math.min(100, Math.round(des / limDes * 100)) : 0;
-  const pRis = limRis ? Math.min(100, Math.round(ris / limRis * 100)) : 0;
+  barNec.style.width=pNec+"%";
+  barDes.style.width=pDes+"%";
+  barRis.style.width=pRis+"%";
 
-  barNec.style.width = pNec + "%";
-  barDes.style.width = pDes + "%";
-  barRis.style.width = pRis + "%";
+  textNec.textContent=`${pNec}% usato (${nec.toFixed(2)}€ / ${limNec.toFixed(2)}€)`;
+  textDes.textContent=`${pDes}% usato (${des.toFixed(2)}€ / ${limDes.toFixed(2)}€)`;
+  textRis.textContent=`${pRis}% usato (${ris.toFixed(2)}€ / ${limRis.toFixed(2)}€)`;
 
-  textNec.textContent = `${pNec}% usato (${nec.toFixed(2)}€ / ${limNec.toFixed(2)}€)`;
-  textDes.textContent = `${pDes}% usato (${des.toFixed(2)}€ / ${limDes.toFixed(2)}€)`;
-  textRis.textContent = `${pRis}% usato (${ris.toFixed(2)}€ / ${limRis.toFixed(2)}€)`;
-
-  const list = document.getElementById("list");
-  list.innerHTML = "";
-
-  if (mese().entries.length === 0) {
-    list.innerHTML = `<div class="empty">Nessuna spesa per questo mese.</div>`;
+  list.innerHTML="";
+  if(mese().entries.length===0){
+    list.innerHTML=`<div class="empty">Nessuna spesa per questo mese.</div>`;
     return;
   }
 
-  mese().entries.forEach((e, index) => {
-    const percentEntry = totalBudget ? Math.min(100, Math.round(e.amount / totalBudget * 100)) : 0;
-
-    const div = document.createElement("div");
-    div.className = "entry";
-    div.dataset.index = index;
-
-    div.innerHTML = `
+  mese().entries.forEach((e,index)=>{
+    const percentEntry=totalBudget?Math.min(100,Math.round(e.amount/totalBudget*100)):0;
+    const div=document.createElement("div");
+    div.className="entry";
+    div.dataset.index=index;
+    div.innerHTML=`
       <div class="entryTop">
         <div>
           <div class="entryDesc">${e.desc}</div>
@@ -231,99 +209,118 @@ function render() {
       </div>
       <div class="percentText">${percentEntry}% del budget totale</div>
     `;
-
     list.appendChild(div);
   });
 }
 
-/* ------------------------------
-   EVENTI
---------------------------------*/
-document.getElementById("addMonthBtn").onclick = addMonth;
+function addEntry(){
+  const desc=descInput.value.trim();
+  const amount=parseFloat(amountInput.value);
+  const cat=catInput.value;
+  if(!desc||isNaN(amount)||amount<=0||!cat) return;
+  const now=new Date();
+  const dateStr=now.toLocaleDateString("it-IT");
+  mese().entries.push({id:Date.now(),desc,amount,cat,date:dateStr});
+  descInput.value="";amountInput.value="";catInput.value="";
+  saveState();render();
+}
 
-document.getElementById("addBtn").onclick = addEntry;
-document.getElementById("addExtraBtn").onclick = addExtra;
+function addExtra(){
+  const extra=parseFloat(extraInput.value);
+  if(isNaN(extra)||extra<=0) return;
+  mese().extra+=extra;
+  extraInput.value="";
+  saveState();render();
+}
 
-document.getElementById("budgetInput").onchange = () => {
-  const b = parseFloat(budgetInput.value);
-  if (!isNaN(b) && b >= 0) {
-    mese().budget = b;
-    saveState();
-    render();
-  }
+function handleEdit(index){
+  const e=mese().entries[index];
+  if(!e) return;
+  const newDesc=prompt("Modifica descrizione:",e.desc);
+  if(newDesc===null) return;
+  const newAmountStr=prompt("Modifica importo (€):",e.amount);
+  if(newAmountStr===null) return;
+  const newAmount=parseFloat(newAmountStr);
+  if(isNaN(newAmount)||newAmount<=0) return;
+  const newCat=prompt("Modifica categoria (Necessità / Desideri / Risparmio):",e.cat);
+  if(newCat===null) return;
+  if(!["Necessità","Desideri","Risparmio"].includes(newCat.trim())) return;
+  e.desc=newDesc.trim();
+  e.amount=newAmount;
+  e.cat=newCat.trim();
+  saveState();render();
+}
+
+function handleDelete(index){
+  const e=mese().entries[index];
+  if(!e) return;
+  if(!confirm(`Eliminare "${e.desc}"?`)) return;
+  mese().entries.splice(index,1);
+  saveState();render();
+}
+
+document.getElementById("addMonthBtn").onclick=addMonth;
+document.getElementById("addBtn").onclick=addEntry;
+document.getElementById("addExtraBtn").onclick=addExtra;
+
+budgetInput.onchange=()=>{
+  const b=parseFloat(budgetInput.value);
+  if(!isNaN(b)&&b>=0){mese().budget=b;saveState();render();}
 };
 
-document.getElementById("meseSelect").addEventListener("change", (e) => {
-  state.meseCorrente = e.target.value;
-  if (!state.mesi[state.meseCorrente])
-    state.mesi[state.meseCorrente] = { budget: 0, extra: 0, entries: [] };
-  saveState();
-  render();
+meseSelect.addEventListener("change",e=>{
+  state.meseCorrente=e.target.value;
+  if(!state.mesi[state.meseCorrente]) state.mesi[state.meseCorrente]={budget:0,extra:0,entries:[]};
+  saveState();render();
 });
 
-document.getElementById("list").addEventListener("click", (e) => {
-  const entryDiv = e.target.closest(".entry");
-  if (!entryDiv) return;
-  const index = parseInt(entryDiv.dataset.index, 10);
-
-  if (e.target.classList.contains("edit")) {
-    handleEdit(index);
-  } else if (e.target.classList.contains("delete")) {
-    handleDelete(index);
-  }
+list.addEventListener("click",e=>{
+  const entryDiv=e.target.closest(".entry");
+  if(!entryDiv) return;
+  const index=parseInt(entryDiv.dataset.index,10);
+  if(e.target.classList.contains("edit")) handleEdit(index);
+  else if(e.target.classList.contains("delete")) handleDelete(index);
 });
 
-/* ------------------------------
-   EXPORT
---------------------------------*/
-document.getElementById("exportBtn").onclick = () => {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  const date = new Date().toISOString().slice(0,10);
-  a.download = `budgeting-${date}.json`;
+document.getElementById("exportBtn").onclick=()=>{
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  const date=new Date().toISOString().slice(0,10);
+  a.download=`budgeting-${date}.json`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 };
 
-/* ------------------------------
-   IMPORT
---------------------------------*/
-document.getElementById("importBtn").onclick = () => {
-  fileInput.value = "";
+document.getElementById("importBtn").onclick=()=>{
+  fileInput.value="";
   fileInput.click();
 };
 
-document.getElementById("fileInput").onchange = () => {
-  const file = fileInput.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const data = JSON.parse(e.target.result);
-      if (!data || typeof data !== "object") return;
-      if (!data.mesi) data.mesi = {};
-      if (!data.meseCorrente) data.meseCorrente = getCurrentMonthKey();
-      state = data;
-      if (!state.mesi[state.meseCorrente])
-        state.mesi[state.meseCorrente] = { budget: 0, extra: 0, entries: [] };
-      saveState();
-      render();
-    } catch {}
+fileInput.onchange=()=>{
+  const file=fileInput.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!data||typeof data!=="object") return;
+      if(!data.mesi) data.mesi={};
+      if(!data.meseCorrente) data.meseCorrente=getCurrentMonthKey();
+      state=data;
+      if(!state.mesi[state.meseCorrente]) state.mesi[state.meseCorrente]={budget:0,extra:0,entries:[]};
+      saveState();render();
+    }catch(err){}
   };
   reader.readAsText(file);
 };
 
-/* ------------------------------
-   INIT
---------------------------------*/
 loadState();
 render();
 </script>
-
 
 </div>
 </body>
