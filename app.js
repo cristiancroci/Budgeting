@@ -15,6 +15,25 @@ let editIndex = null;
 let isSaving = false;
 
 /* ============================
+   GRUPPI 50‑30‑20
+============================ */
+
+const groupMap = {
+  "Spesa": "necessita",
+  "Bollette": "necessita",
+  "Auto": "necessita",
+  "Salute": "necessita",
+
+  "Shopping": "desideri",
+  "Tempo libero": "desideri",
+  "Ristoranti": "desideri",
+  "Hobby": "desideri",
+
+  "Risparmio": "risparmio",
+  "Investimenti": "risparmio"
+};
+
+/* ============================
    SEMAFORO
 ============================ */
 
@@ -37,7 +56,7 @@ function setStatusError() {
 }
 
 /* ============================
-   LOAD DATA (come Vault)
+   LOAD DATA
 ============================ */
 
 async function loadData() {
@@ -45,14 +64,7 @@ async function loadData() {
     setStatusSaving();
     const res = await fetch(SCRIPT_URL + "?action=get");
     const text = await res.text();
-
-    try {
-      data = JSON.parse(text);
-    } catch {
-      setStatusError();
-      return;
-    }
-
+    data = JSON.parse(text);
     updateUI();
     setStatusOK();
   } catch {
@@ -61,7 +73,7 @@ async function loadData() {
 }
 
 /* ============================
-   SAVE DATA (come Vault)
+   SAVE DATA
 ============================ */
 
 async function saveData() {
@@ -86,6 +98,37 @@ async function saveData() {
 }
 
 /* ============================
+   CALCOLI 50‑30‑20
+============================ */
+
+function calculateTotals() {
+  const budget = data.budget;
+
+  const limits = {
+    necessita: budget * 0.50,
+    desideri: budget * 0.30,
+    risparmio: budget * 0.20
+  };
+
+  const totals = { necessita: 0, desideri: 0, risparmio: 0 };
+
+  data.expenses.forEach(e => {
+    totals[e.group] += e.amount;
+  });
+
+  const residui = {
+    necessita: limits.necessita - totals.necessita,
+    desideri: limits.desideri - totals.desideri,
+    risparmio: limits.risparmio - totals.risparmio
+  };
+
+  const totaleSpese = totals.necessita + totals.desideri + totals.risparmio;
+  const residuoTotale = budget - totaleSpese;
+
+  return { limits, totals, residui, totaleSpese, residuoTotale };
+}
+
+/* ============================
    UPDATE UI
 ============================ */
 
@@ -95,10 +138,64 @@ function updateUI() {
   document.getElementById("yearSelect").value = data.year;
 
   renderList();
+  updateSummary();
 }
 
 /* ============================
-   ADD EXPENSE (come addEntry)
+   UPDATE SUMMARY (50‑30‑20)
+============================ */
+
+function updateSummary() {
+  const { limits, totals, residui, totaleSpese, residuoTotale } = calculateTotals();
+
+  necLimit.textContent = limits.necessita.toFixed(2) + "€";
+  desLimit.textContent = limits.desideri.toFixed(2) + "€";
+  risLimit.textContent = limits.risparmio.toFixed(2) + "€";
+
+  necUsed.textContent = totals.necessita.toFixed(2) + "€";
+  desUsed.textContent = totals.desideri.toFixed(2) + "€";
+  risUsed.textContent = totals.risparmio.toFixed(2) + "€";
+
+  necLeft.textContent = residui.necessita.toFixed(2) + "€";
+  desLeft.textContent = residui.desideri.toFixed(2) + "€";
+  risLeft.textContent = residui.risparmio.toFixed(2) + "€";
+
+  totaleSpeseEl = document.getElementById("totaleSpese");
+  residuoTotaleEl = document.getElementById("residuoTotale");
+
+  totaleSpeseEl.textContent = totaleSpese.toFixed(2) + "€";
+  residuoTotaleEl.textContent = residuoTotale.toFixed(2) + "€";
+
+  updateSemaforo(limits, totals, residuoTotale);
+}
+
+/* ============================
+   SEMAFORO LOGICA
+============================ */
+
+function updateSemaforo(limits, totals, residuoTotale) {
+  if (residuoTotale < 0 ||
+      totals.necessita > limits.necessita ||
+      totals.desideri > limits.desideri ||
+      totals.risparmio > limits.risparmio) {
+    setStatusError();
+    return;
+  }
+
+  if (totals.necessita > limits.necessita * 0.7 ||
+      totals.desideri > limits.desideri * 0.7 ||
+      totals.risparmio > limits.risparmio * 0.7) {
+    const s = document.getElementById("saveStatus");
+    s.className = "statusIndicator saving";
+    s.textContent = "🟡 Attenzione";
+    return;
+  }
+
+  setStatusOK();
+}
+
+/* ============================
+   ADD EXPENSE
 ============================ */
 
 function addExpense() {
@@ -109,10 +206,13 @@ function addExpense() {
 
   if (!desc || isNaN(amount)) return;
 
+  const group = groupMap[category];
+
   const entry = {
     desc,
     amount,
     category,
+    group,
     note,
     date: new Date().toISOString().split("T")[0]
   };
@@ -127,11 +227,12 @@ function addExpense() {
 
   clearForm();
   renderList();
+  updateSummary();
   saveData();
 }
 
 /* ============================
-   EDIT EXPENSE
+   EDIT
 ============================ */
 
 function editExpense(i) {
@@ -147,12 +248,13 @@ function editExpense(i) {
 }
 
 /* ============================
-   DELETE EXPENSE
+   DELETE
 ============================ */
 
 function deleteExpense(i) {
   data.expenses.splice(i, 1);
   renderList();
+  updateSummary();
   saveData();
 }
 
@@ -168,7 +270,7 @@ function clearForm() {
 }
 
 /* ============================
-   SORT (come Vault)
+   SORT
 ============================ */
 
 function applySort() {
@@ -190,7 +292,7 @@ function applySort() {
 }
 
 /* ============================
-   RENDER LIST (come Vault)
+   RENDER LIST
 ============================ */
 
 function renderList() {
@@ -221,6 +323,7 @@ function renderList() {
 
 budgetInput.addEventListener("change", () => {
   data.budget = parseFloat(budgetInput.value) || 0;
+  updateSummary();
   saveData();
 });
 
