@@ -11,6 +11,7 @@ let data = {
   expenses: []
 };
 
+
 let editIndex = null;
 let isSaving = false;
 
