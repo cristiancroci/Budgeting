@@ -3,68 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Budgeting App</title>
+  <title>Budgeting</title>
+
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-  <h1>Budgeting</h1>
+  <div class="container">
 
-  <div id="saveStatus" class="statusIndicator">🟢 Pronto</div>
+    <!-- Semaforo -->
+    <div id="saveStatus" class="statusIndicator ok">🟢 Salvato</div>
 
-  <div class="inputBox">
-    <label>Budget mensile</label>
-    <input type="number" id="budgetInput" placeholder="0">
+    <h1>Budgeting 💰</h1>
+
+    <!-- ORDINAMENTO (solo storico) -->
+    <div class="sortWrapper">
+      <select id="sortSelect" class="sortMenu">
+        <option value="recent">📅 Recenti</option>
+        <option value="az">🔤 Nome A → Z</option>
+        <option value="za">🔤 Nome Z → A</option>
+      </select>
+    </div>
+
+    <!-- FORM BUDGET -->
+    <div class="form">
+
+      <input id="budgetInput" type="number" placeholder="Budget mensile">
+
+      <select id="monthSelect">
+        <option>Gennaio</option><option>Febbraio</option><option>Marzo</option>
+        <option>Aprile</option><option>Maggio</option><option>Giugno</option>
+        <option>Luglio</option><option>Agosto</option><option>Settembre</option>
+        <option>Ottobre</option><option>Novembre</option><option>Dicembre</option>
+      </select>
+
+      <input id="yearInput" type="number" placeholder="Anno">
+
+      <input id="descInput" placeholder="Descrizione spesa">
+      <input id="amountInput" type="number" placeholder="Importo">
+
+      <select id="catInput">
+        <option>Spesa</option>
+        <option>Bollette</option>
+        <option>Auto</option>
+        <option>Salute</option>
+        <option>Shopping</option>
+        <option>Tempo libero</option>
+        <option>Ristoranti</option>
+        <option>Hobby</option>
+        <option>Risparmio</option>
+        <option>Investimenti</option>
+      </select>
+
+      <button id="addBtn" class="btn-crazy">➕ Aggiungi spesa</button>
+
+    </div>
+
+    <h2>Storico spese</h2>
+    <div id="list"></div>
+
   </div>
-
-  <div class="inputBox">
-    <label>Mese</label>
-    <select id="monthSelect">
-      <option>Gennaio</option><option>Febbraio</option><option>Marzo</option>
-      <option>Aprile</option><option>Maggio</option><option>Giugno</option>
-      <option>Luglio</option><option>Agosto</option><option>Settembre</option>
-      <option>Ottobre</option><option>Novembre</option><option>Dicembre</option>
-    </select>
-  </div>
-
-  <div class="inputBox">
-    <label>Anno</label>
-    <input type="number" id="yearInput" value="2026">
-  </div>
-
-  <h2>Nuova Spesa</h2>
-
-  <div class="inputBox">
-    <label>Descrizione</label>
-    <input type="text" id="descInput">
-  </div>
-
-  <div class="inputBox">
-    <label>Categoria</label>
-    <select id="catInput">
-      <option>Spesa</option>
-      <option>Bollette</option>
-      <option>Auto</option>
-      <option>Salute</option>
-      <option>Shopping</option>
-      <option>Tempo libero</option>
-      <option>Ristoranti</option>
-      <option>Hobby</option>
-      <option>Risparmio</option>
-      <option>Investimenti</option>
-    </select>
-  </div>
-
-  <div class="inputBox">
-    <label>Importo</label>
-    <input type="number" id="amountInput">
-  </div>
-
-  <button id="addBtn">➕ Aggiungi</button>
-
-  <h2>Storico</h2>
-  <ul id="historyList"></ul>
 
   <script src="app.js"></script>
 </body>
