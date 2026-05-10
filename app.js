@@ -2,7 +2,7 @@
    CONFIG
 ============================ */
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxQG6CxE_JjAjw9nd6AVo_j1zQlS7tePiFBwX8Dbq3VF_NmnEYCsoIQk5Ii5M9Q8cT3Fw/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzIPwvwgdbOQPd3EPOFgU3FigoQiPl5pt2GtXuV6MhwaAF2jWd9YE6nkdOeyUFixz8Gew/exec";
 
 let entries = [];   // spese
 let editIndex = null;
