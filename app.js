@@ -36,6 +36,7 @@ function setStatusError() {
   s.textContent = "🔴 Errore salvataggio";
 }
 
+
 /* ============================
    LOAD DATA
 ============================ */
