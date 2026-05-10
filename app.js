@@ -2,7 +2,7 @@
    CONFIG
 ============================ */
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx48SC5rxyMwtcBYEuAtIEUTjEdJIJ3zF0ZaAZ8omRPNBu8vcokvw0kuRY1u2T4vmCRYw/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxQG6CxE_JjAjw9nd6AVo_j1zQlS7tePiFBwX8Dbq3VF_NmnEYCsoIQk5Ii5M9Q8cT3Fw/exec";
 
 let data = {
   budget: 0,
