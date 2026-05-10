@@ -230,7 +230,6 @@ input:focus, select:focus {
   <div class="btn-row">
     <button class="btn-small" id="exportBtn" type="button">⬇️ Esporta</button>
     <button class="btn-small" id="importBtn" type="button">⬆️ Importa</button>
-    <button class="btn-small" id="resetBtn" type="button">🗑 Reset</button>
   </div>
 
   <input type="file" id="fileInput" accept="application/json">
@@ -294,8 +293,10 @@ function loadState() {
   } catch {}
 
   if (!state.meseCorrente) state.meseCorrente = getCurrentMonthKey();
-  if (!state.mesi[state.meseCorrente])
+
+  if (!state.mesi[state.meseCorrente]) {
     state.mesi[state.meseCorrente] = { budget: 0, extra: 0, entries: [] };
+  }
 }
 
 function saveState() {
@@ -471,6 +472,29 @@ function handleDelete(index) {
 }
 
 /* ------------------------------
+   RIFERIMENTI DOM
+--------------------------------*/
+const budgetInput = document.getElementById("budgetInput");
+const extraInput = document.getElementById("extraInput");
+const addExtraBtn = document.getElementById("addExtraBtn");
+const descInput = document.getElementById("descInput");
+const amountInput = document.getElementById("amountInput");
+const catInput = document.getElementById("catInput");
+const addBtn = document.getElementById("addBtn");
+
+const barNec = document.getElementById("barNec");
+const barDes = document.getElementById("barDes");
+const barRis = document.getElementById("barRis");
+const textNec = document.getElementById("textNec");
+const textDes = document.getElementById("textDes");
+const textRis = document.getElementById("textRis");
+
+const exportBtn = document.getElementById("exportBtn");
+const importBtn = document.getElementById("importBtn");
+const fileInput = document.getElementById("fileInput");
+const list = document.getElementById("list");
+
+/* ------------------------------
    EVENTI
 --------------------------------*/
 addBtn.onclick = addEntry;
@@ -494,4 +518,68 @@ document.getElementById("meseSelect").addEventListener("change", (e) => {
 });
 
 list.addEventListener("click", (e) => {
-  const entry
+  const entryDiv = e.target.closest(".entry");
+  if (!entryDiv) return;
+  const index = parseInt(entryDiv.dataset.index, 10);
+
+  if (e.target.classList.contains("edit")) {
+    handleEdit(index);
+  } else if (e.target.classList.contains("delete")) {
+    handleDelete(index);
+  }
+});
+
+/* ------------------------------
+   EXPORT
+--------------------------------*/
+exportBtn.onclick = () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  const date = new Date().toISOString().slice(0,10);
+  a.download = `budgeting-${date}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+/* ------------------------------
+   IMPORT
+--------------------------------*/
+importBtn.onclick = () => {
+  fileInput.value = "";
+  fileInput.click();
+};
+
+fileInput.onchange = () => {
+  const file = fileInput.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data || typeof data !== "object") return;
+      if (!data.mesi) data.mesi = {};
+      if (!data.meseCorrente) data.meseCorrente = getCurrentMonthKey();
+      state = data;
+      if (!state.mesi[state.meseCorrente])
+        state.mesi[state.meseCorrente] = { budget: 0, extra: 0, entries: [] };
+      saveState();
+      render();
+    } catch {}
+  };
+  reader.readAsText(file);
+};
+
+/* ------------------------------
+   INIT
+--------------------------------*/
+loadState();
+render();
+</script>
+
+</div>
+</body>
+</html>
