@@ -1,145 +1,193 @@
 /* ============================
-CONFIG
+   CONFIG
 ============================ */
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxQG6CxE_JjAjw9nd6AVo_j1zQlS7tePiFBwX8Dbq3VF_NmnEYCsoIQk5Ii5M9Q8cT3Fw/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMgmiNvyJyiacBYqJEp8Nhg5GU7AqEtfN4ilq7aF5EmuKBdMdQsQ6YWy2UmCFqFYzMqA/exec";
 
-let data = {
-  budget: 0,
-  month: "Gennaio",
-  year: 2026,
-  expenses: []
-};
-
+let entries = [];   // spese
 let editIndex = null;
+let deleteIndex = null;
 let isSaving = false;
 
 /* ============================
-SEMAFORO
+   CARICAMENTO
 ============================ */
 
-function setStatusSaving() {
-  const s = document.getElementById("saveStatus");
-  s.className = "statusIndicator saving";
-  s.textContent = "🟡 Salvataggio...";
-}
-
-function setStatusOK() {
-  const s = document.getElementById("saveStatus");
-  s.className = "statusIndicator ok";
-  s.textContent = "🟢 Salvato";
-}
-
-function setStatusError() {
-  const s = document.getElementById("saveStatus");
-  s.className = "statusIndicator error";
-  s.textContent = "🔴 Errore salvataggio";
-}
-
-/* ============================
-LOAD DATA
-============================ */
-
-async function loadData() {
+async function load() {
   try {
-    const res = await fetch(SCRIPT_URL);
-    const json = await res.json();
-    data = json;
-
-    document.getElementById("budgetInput").value = data.budget;
-    document.getElementById("monthSelect").value = data.month;
-    document.getElementById("yearInput").value = data.year;
-
-    renderHistory();
+    const r = await fetch(SCRIPT_URL + "?action=load");
+    const t = await r.text();
+    entries = t ? JSON.parse(t) : [];
   } catch {
-    setStatusError();
+    entries = [];
   }
+  render();
 }
 
 /* ============================
-SAVE DATA (FIX DEFINITIVA)
+   SALVATAGGIO
 ============================ */
 
-async function saveData() {
-  if (isSaving) return;
+let saveTimeout = null;
+
+function autoSave() {
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(save, 500);
+}
+
+async function save() {
+  const status = document.getElementById("saveStatus");
+  status.className = "statusIndicator saving";
+  status.textContent = "🟡 Salvataggio...";
   isSaving = true;
-  setStatusSaving();
 
   try {
-    const res = await fetch(SCRIPT_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify(data),
-      muteHttpExceptions: true
-    });
+    const data = encodeURIComponent(JSON.stringify(entries));
+    await fetch(SCRIPT_URL + "?action=save&data=" + data);
 
-    if (res.ok) setStatusOK();
-    else setStatusError();
+    status.className = "statusIndicator ok";
+    status.textContent = "🟢 Salvato";
   } catch {
-    setStatusError();
+    status.className = "statusIndicator err";
+    status.textContent = "🔴 Errore";
   }
 
   isSaving = false;
 }
 
 /* ============================
-AGGIUNTA SPESA
+   RENDER
 ============================ */
 
-document.getElementById("addBtn").addEventListener("click", () => {
-  const desc = document.getElementById("descInput").value;
-  const cat = document.getElementById("catInput").value;
-  const amount = parseFloat(document.getElementById("amountInput").value);
-
-  if (!desc || !amount) return;
-
-  data.expenses.push({ desc, cat, amount });
-  renderHistory();
-  saveData();
-});
-
-/* ============================
-RENDER LISTA
-============================ */
-
-function renderHistory() {
-  const list = document.getElementById("historyList");
+function render() {
+  const list = document.getElementById("list");
   list.innerHTML = "";
 
-  data.expenses.forEach((e, i) => {
-    const li = document.createElement("li");
-    li.innerHTML = `
-      <span>${e.desc} - ${e.cat}</span>
-      <strong>${e.amount}€</strong>
+  entries.forEach((e, i) => {
+    const div = document.createElement("div");
+    div.className = "entry";
+
+    div.innerHTML = `
+      <div class="entryTitle">💸 ${escapeHtml(e.desc)}</div><br>
+
+      <div class="entryRow">🏷️ <span class="label">Categoria:</span> ${escapeHtml(e.cat)}</div>
+      <div class="entryRow">💰 <span class="label">Importo:</span> ${e.amount}€</div>
+      <div class="entryRow">📅 <span class="label">Mese:</span> ${escapeHtml(e.month)} ${e.year}</div>
+
+      <br>
+
+      <button class="btn-edit" onclick="startEdit(${i})">✏️ Modifica</button>
+      <button class="btn-delete" onclick="confirmDelete(${i})">🗑️ Elimina</button>
     `;
-    list.appendChild(li);
+
+    list.appendChild(div);
   });
 }
 
 /* ============================
-EVENTI CAMPI
+   AGGIUNTA / MODIFICA
 ============================ */
 
-document.getElementById("budgetInput").addEventListener("input", e => {
-  data.budget = parseFloat(e.target.value) || 0;
-  saveData();
-});
+function addEntry() {
+  const desc = document.getElementById("descInput").value.trim();
+  const amount = parseFloat(document.getElementById("amountInput").value);
+  const cat = document.getElementById("catInput").value;
+  const month = document.getElementById("monthSelect").value;
+  const year = document.getElementById("yearInput").value;
 
-document.getElementById("monthSelect").addEventListener("change", e => {
-  data.month = e.target.value;
-  saveData();
-});
+  if (!desc || !amount) return;
 
-document.getElementById("yearInput").addEventListener("input", e => {
-  data.year = parseInt(e.target.value);
-  saveData();
-});
+  const obj = { desc, amount, cat, month, year };
+
+  if (editIndex === null) {
+    entries.push(obj);
+  } else {
+    entries[editIndex] = obj;
+    editIndex = null;
+
+    addBtn.innerHTML = "➕ Aggiungi spesa";
+    addBtn.className = "btn-crazy";
+  }
+
+  clearForm();
+  render();
+  autoSave();
+}
+
+function startEdit(i) {
+  const e = entries[i];
+  editIndex = i;
+
+  document.getElementById("descInput").value = e.desc;
+  document.getElementById("amountInput").value = e.amount;
+  document.getElementById("catInput").value = e.cat;
+  document.getElementById("monthSelect").value = e.month;
+  document.getElementById("yearInput").value = e.year;
+
+  addBtn.innerHTML = "💾 Salva Modifica";
+  addBtn.className = "btn-save";
+}
+
+function clearForm() {
+  document.getElementById("descInput").value = "";
+  document.getElementById("amountInput").value = "";
+}
 
 /* ============================
-START
+   ELIMINAZIONE
 ============================ */
 
-loadData();
+function confirmDelete(i) {
+  deleteIndex = i;
+
+  const overlay = document.createElement("div");
+  overlay.className = "confirmOverlay";
+  overlay.id = "confirmOverlay";
+
+  overlay.innerHTML = `
+    <div class="confirmBox">
+      <h3>Eliminare questa spesa?</h3>
+
+      <div class="confirmButtons">
+        <button class="btn-cancel" onclick="cancelDelete()">❌ Annulla</button>
+        <button class="btn-delete" onclick="doDelete()">🗑️ Elimina</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+}
+
+function cancelDelete() {
+  document.getElementById("confirmOverlay").remove();
+  deleteIndex = null;
+}
+
+function doDelete() {
+  entries.splice(deleteIndex, 1);
+  deleteIndex = null;
+  document.getElementById("confirmOverlay").remove();
+  render();
+  autoSave();
+}
+
+/* ============================
+   UTILITY
+============================ */
+
+function escapeHtml(str) {
+  return (str || "").replace(/[&<>"']/g, c => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[c]));
+}
+
+/* ============================
+   START
+============================ */
+
+const addBtn = document.getElementById("addBtn");
+load();
