@@ -1,194 +1,213 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
 body {
-  background: #f2f7fb;
-  color: #000;
-  font-family: Arial, sans-serif;
-  padding: 20px;
-  display: flex;
-  justify-content: center;
+  background: radial-gradient(circle at top, #1f2933, #050816);
+  color: #f9fafb;
+  min-height: 100vh;
 }
 
 .container {
-  width: 100%;
-  max-width: 380px;
+  max-width: 480px;
   margin: 0 auto;
+  padding: 16px;
 }
 
+/* Titoli */
 h1 {
+  font-size: 24px;
+  margin: 12px 0 16px;
   text-align: center;
-  margin-bottom: 10px;
 }
 
-/* SEMAFORO */
+h2 {
+  font-size: 18px;
+  margin: 20px 0 8px;
+}
+
+/* Semaforo salvataggio */
 .statusIndicator {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  background: #1a1f36;
-  padding: 8px 14px;
-  border-radius: 8px;
   font-size: 14px;
-  z-index: 9999;
-  box-shadow: 0 0 10px rgba(0,0,0,0.4);
-  transition: 0.3s;
+  padding: 6px 10px;
+  border-radius: 999px;
+  display: inline-block;
+  margin-bottom: 8px;
 }
 
-.statusIndicator.ok { color: #00cc66; }
-.statusIndicator.err { color: #ff3333; }
+.statusIndicator.ok {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+}
 
 .statusIndicator.saving {
-  color: #ffcc00;
-  animation: savingBlink 1.2s infinite ease-in-out;
+  background: rgba(234, 179, 8, 0.15);
+  color: #facc15;
 }
 
-@keyframes savingBlink {
-  0% { opacity: 1; }
-  50% { opacity: 0.35; }
-  100% { opacity: 1; }
+.statusIndicator.error {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fecaca;
 }
 
-/* CARD SCURE */
-.entry {
-  background: #1a1f36;
-  padding: 14px;
-  border-radius: 10px;
-  width: 100%;
-  margin: 12px auto;
-  color: white;
-  box-sizing: border-box;
+/* Box riepilogo */
+.summaryBox {
+  background: rgba(15, 23, 42, 0.9);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(148, 163, 184, 0.3);
 }
 
-.entryTitle {
-  display: inline-block;
-  background: linear-gradient(90deg, #4da6ff, #0066ff, #4da6ff);
-  padding: 6px 12px;
-  border-radius: 12px;
-  font-weight: bold;
+.summaryBox h3 {
   font-size: 16px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
-.entryRow {
-  margin: 6px 0;
+.summaryItem {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.summaryItem strong {
+  font-weight: 600;
+}
+
+.summaryItem:last-child {
+  margin-bottom: 0;
+}
+
+.summaryBox hr {
+  border: none;
+  border-top: 1px solid rgba(148, 163, 184, 0.4);
+  margin: 8px 0;
+}
+
+/* Riga per mese/anno */
+.row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+/* Input e select */
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: rgba(15, 23, 42, 0.9);
+  color: #e5e7eb;
   font-size: 14px;
 }
 
-.label {
-  font-weight: bold;
-  color: #9ecbff;
-  display: block;
-  margin-bottom: 2px;
+input::placeholder,
+textarea::placeholder {
+  color: #6b7280;
 }
 
-/* INPUT */
-input, select, textarea {
-  width: 100%;
-  padding: 10px;
-  margin: 6px 0;
-  border-radius: 6px;
-  border: none;
-  box-sizing: border-box;
-  background: #ffffff;
-  color: #000;
+textarea {
+  min-height: 60px;
+  resize: vertical;
 }
 
-/* BOTTONI */
+/* Form */
+.form {
+  background: rgba(15, 23, 42, 0.9);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-top: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+/* Pulsanti */
 button {
-  width: 100%;
-  padding: 12px;
-  border-radius: 8px;
   border: none;
-  color: white;
-  font-size: 16px;
   cursor: pointer;
-  margin-top: 8px;
 }
 
 .btn-crazy {
-  background: linear-gradient(90deg, #ff00ff, #00ffff, #ffff00, #ff00ff);
-  background-size: 400% 400%;
-  animation: crazyColor 2s infinite linear;
+  width: 100%;
+  padding: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f97316, #ec4899, #8b5cf6);
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  box-shadow: 0 10px 25px rgba(248, 113, 113, 0.4);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
 
-@keyframes crazyColor {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+.btn-crazy:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 12px rgba(248, 113, 113, 0.3);
 }
 
-.btn-save {
-  background: linear-gradient(90deg, #66ff99, #00cc66, #66ff99);
-}
-
-/* MODIFICA */
-.btn-orange {
-  background: linear-gradient(90deg, #ff9900, #ff6600, #ff9900);
-  background-size: 300% 300%;
-  animation: orangeAnim 4s infinite linear;
-}
-
-@keyframes orangeAnim {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* ELIMINA */
+.btn-orange,
 .btn-red {
-  background: linear-gradient(90deg, #ff0033, #cc0000, #ff0033);
-  background-size: 300% 300%;
-  animation: redAnim 4s infinite linear;
-}
-
-@keyframes redAnim {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* SLIDER MESE */
-.monthSlider {
-  display: flex;
-  overflow-x: auto;
-  gap: 8px;
-  padding: 6px 0;
-}
-
-.monthSlider div {
   padding: 6px 10px;
-  background: #2a2f45;
-  border-radius: 8px;
-  cursor: pointer;
-  white-space: nowrap;
+  border-radius: 999px;
   font-size: 13px;
+  color: white;
 }
 
-.monthSlider .active {
-  background: #4da6ff;
-  font-weight: bold;
+.btn-orange {
+  background: linear-gradient(90deg, #fb923c, #f97316);
 }
 
-/* STORICO */
-#historyList {
-  font-size: 13px;
-  max-height: 220px;
-  overflow-y: auto;
+.btn-red {
+  background: linear-gradient(90deg, #f97373, #ef4444);
 }
 
-.historyItem {
-  padding: 6px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+/* Lista spese */
+#list {
+  margin-bottom: 40px;
 }
 
-.historyButtons {
+.item {
+  background: rgba(15, 23, 42, 0.9);
+  border-radius: 14px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.itemTitle {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.itemSub {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-bottom: 4px;
+}
+
+.itemNote {
+  font-size: 12px;
+  color: #e5e7eb;
+  margin-bottom: 6px;
+}
+
+.itemBtns {
   display: flex;
   gap: 6px;
-  margin-top: 4px;
 }
 
+/* Barre luminose */
 .barBox {
   width: 100%;
   height: 12px;
-  background: #ddd;
+  background: #020617;
   border-radius: 10px;
   overflow: hidden;
   margin: 6px 0;
@@ -197,13 +216,38 @@ button {
 .bar {
   height: 100%;
   width: 0%;
+  transition: width 0.4s ease;
+  border-radius: 10px;
+}
+
+/* Colori diversi */
+.barNec {
   background: linear-gradient(90deg, #4facfe, #00f2fe);
   box-shadow: 0 0 8px #4facfe;
-  transition: width 0.4s ease;
+}
+
+.barDes {
+  background: linear-gradient(90deg, #a855f7, #ec4899);
+  box-shadow: 0 0 8px #ec4899;
+}
+
+.barRis {
+  background: linear-gradient(90deg, #22c55e, #2dd4bf);
+  box-shadow: 0 0 8px #22c55e;
 }
 
 .barText {
   display: flex;
   justify-content: space-between;
-  font-size: 14px;
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.barText .right {
+  text-align: right;
+}
+
+/* Top box */
+.topBox {
+  margin-top: 4px;
 }
