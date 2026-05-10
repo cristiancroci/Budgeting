@@ -1,123 +1,79 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Budgeting</title>
-
-  <link rel="stylesheet" href="style.css">
-
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#1a1f36">
-
-  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
-
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Budgeting</title>
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-  <!-- SEMAFORO -->
-  <div id="saveStatus" class="statusIndicator ok">🟢 Salvato</div>
+<div class="container">
 
-  <div class="container">
+  <h1>Budget Mensile</h1>
 
-    <h1>Budgeting 💰</h1>
-
-    <!-- CARD BUDGET -->
-    <div class="entry">
-      <div class="entryTitle">Budget mensile</div>
-
-      <div class="entryRow">
-        <span class="label">Budget totale (€):</span>
-        <input id="budgetInput" type="number" placeholder="1500">
-      </div>
-
-      <div class="entryRow">
-        <span class="label">Mese:</span>
-        <div id="monthSlider" class="monthSlider"></div>
-      </div>
-
-      <div class="entryRow">
-        <span class="label">Anno:</span>
-        <select id="yearSelect">
-          <option>2025</option>
-          <option selected>2026</option>
-          <option>2027</option>
-        </select>
-      </div>
-
-      <button class="btn-crazy" onclick="setBudget()">Imposta budget</button>
-    </div>
-
-    <!-- DASHBOARD -->
-    <div class="entry">
-      <div class="entryTitle">Dashboard</div>
-      <div id="dashboardContent"></div>
-    </div>
-
-    <!-- GRAFICO GIORNALIERO -->
-    <div class="entry">
-      <div class="entryTitle">Grafico giornaliero</div>
-      <canvas id="dailyChart" height="200"></canvas>
-    </div>
-
-    <!-- GRAFICO CATEGORIE -->
-    <div class="entry">
-      <div class="entryTitle">Grafico categorie</div>
-      <canvas id="categoryChart" height="200"></canvas>
-    </div>
-
-    <!-- AGGIUNGI / MODIFICA SPESA -->
-    <div class="entry">
-      <div class="entryTitle" id="formTitle">Aggiungi spesa</div>
-
-      <input id="titleInput" placeholder="Titolo">
-      <input id="amountInput" type="number" placeholder="Importo (€)">
-      
-      <select id="categoryInput">
-        <option disabled selected>Categoria</option>
-
-        <option>Casa</option>
-        <option>Spesa</option>
-        <option>Auto</option>
-        <option>Bollette</option>
-        <option>Salute</option>
-
-        <option>Ristoranti</option>
-        <option>Tempo libero</option>
-        <option>Shopping</option>
-        <option>Hobby</option>
-
-        <option>Risparmio</option>
-        <option>Investimenti</option>
-      </select>
-
-      <input id="dateInput" type="date">
-      <textarea id="noteInput" placeholder="Note"></textarea>
-
-      <button class="btn-save" id="saveBtn" onclick="addExpense()">Aggiungi</button>
-      <button class="btn-orange" id="editBtn" style="display:none;" onclick="saveEdit()">✏️ Salva modifica</button>
-      <button class="btn-red" id="cancelEditBtn" style="display:none;" onclick="cancelEdit()">❌ Annulla</button>
-    </div>
-
-    <!-- STORICO -->
-    <div class="entry">
-      <div class="entryTitle">Storico</div>
-      <div id="historyList"></div>
-    </div>
-
-
+  <div class="entry">
+    <label>Budget:</label>
+    <input id="budgetInput" type="number" placeholder="0">
   </div>
 
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js');
-      });
-    }
-  </script>
-  <script src="app.js"></script>
+  <div class="entry">
+    <label>Mese:</label>
+    <select id="monthSelect">
+      <option>Gennaio</option><option>Febbraio</option><option>Marzo</option>
+      <option>Aprile</option><option>Maggio</option><option>Giugno</option>
+      <option>Luglio</option><option>Agosto</option><option>Settembre</option>
+      <option>Ottobre</option><option>Novembre</option><option>Dicembre</option>
+    </select>
+  </div>
+
+  <div class="entry">
+    <label>Anno:</label>
+    <select id="yearSelect">
+      <option>2025</option>
+      <option selected>2026</option>
+      <option>2027</option>
+    </select>
+  </div>
+
+  <h2>Nuova Spesa</h2>
+
+  <div class="entry">
+    <label>Descrizione:</label>
+    <input id="descInput" type="text">
+  </div>
+
+  <div class="entry">
+    <label>Importo (€):</label>
+    <input id="amountInput" type="number" step="0.01">
+  </div>
+
+  <div class="entry">
+    <label>Categoria:</label>
+    <select id="categoryInput">
+      <option>Spesa</option>
+      <option>Auto</option>
+      <option>Bollette</option>
+      <option>Salute</option>
+      <option>Ristoranti</option>
+      <option>Tempo libero</option>
+      <option>Shopping</option>
+      <option>Hobby</option>
+      <option>Risparmio</option>
+      <option>Investimenti</option>
+    </select>
+  </div>
+
+  <button id="addBtn">Aggiungi spesa</button>
+
+  <h2>Storico</h2>
+  <ul id="expenseList"></ul>
+
+  <div id="saveStatus" class="statusIndicator">🟢 Pronto</div>
+
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>
