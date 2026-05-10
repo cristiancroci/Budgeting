@@ -2,68 +2,416 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Budgeting</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #222;
+      --accent: #6a5acd;
+      --accent2: #ff6b6b;
+      --accent3: #00c9a7;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at top, #ffffff, #e3e7ff);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+    }
+
+    .app {
+      max-width: 480px;
+      width: 100%;
+      padding: 20px 16px 40px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 8px;
+      font-size: 1.6rem;
+      color: #333;
+    }
+
+    h2 {
+      margin-top: 24px;
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+      color: #444;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 16px 14px;
+      box-shadow: 0 14px 30px rgba(0,0,0,0.06);
+      margin-bottom: 16px;
+      border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #d0d4f0;
+      font-size: 0.95rem;
+      outline: none;
+      background: #f9f9ff;
+      transition: border 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(106,90,205,0.18);
+      background: #ffffff;
+    }
+
+    .btn-main {
+      margin-top: 4px;
+      padding: 11px 14px;
+      border-radius: 999px;
+      border: none;
+      color: white;
+      font-weight: 600;
+      font-size: 0.98rem;
+      cursor: pointer;
+      background: linear-gradient(120deg, #ff6b6b, #f7b733, #00c9a7, #6a5acd);
+      background-size: 300% 300%;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      animation: gradientShift 6s ease infinite;
+    }
+
+    .btn-main:active {
+      transform: translateY(1px) scale(0.99);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.16);
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .summaryBox {
+      background: #f7f8ff;
+      border-radius: 12px;
+      padding: 10px;
+      font-size: 0.85rem;
+      border: 1px solid #e0e3ff;
+    }
+
+    .summaryLabel {
+      color: #777;
+      margin-bottom: 4px;
+    }
+
+    .summaryValue {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .summaryValue.negative {
+      color: var(--accent2);
+    }
+
+    .summaryValue.positive {
+      color: var(--accent3);
+    }
+
+    .barWrapper {
+      margin-top: 8px;
+    }
+
+    .barLabel {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    .barOuter {
+      width: 100%;
+      height: 14px;
+      border-radius: 999px;
+      background: #e4e7ff;
+      overflow: hidden;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.12);
+    }
+
+    .barInner {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #00c9a7, #f7b733, #ff6b6b);
+      box-shadow: 0 0 12px rgba(255,107,107,0.7);
+      transition: width 0.3s ease;
+    }
+
+    .percentText {
+      margin-top: 4px;
+      font-size: 0.8rem;
+      color: #555;
+    }
+
+    .entry {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 10px 10px 8px;
+      margin-bottom: 8px;
+      border: 1px solid #e4e6f5;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.04);
+      font-size: 0.9rem;
+    }
+
+    .entryTop {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .entryDesc {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .entryAmount {
+      font-weight: 600;
+      color: var(--accent2);
+    }
+
+    .entryMeta {
+      font-size: 0.78rem;
+      color: #777;
+    }
+
+    .empty {
+      font-size: 0.85rem;
+      color: #888;
+      margin-top: 6px;
+    }
+  </style>
 </head>
 <body>
+  <div class="app">
+    <h1>Budgeting</h1>
+    <div class="subtitle">Imposta il budget, aggiungi spese e guarda le barre luminose scalare 🔆</div>
 
-  <div class="container">
+    <!-- CARD BUDGET + FORM -->
+    <div class="card">
+      <div class="form">
+        <input id="budgetInput" type="number" min="0" placeholder="Budget mensile (€)">
+        <input id="descInput" placeholder="Descrizione spesa">
+        <input id="amountInput" type="number" min="0" step="0.01" placeholder="Importo (€)">
 
-    <!-- Semaforo -->
-    <div id="saveStatus" class="statusIndicator ok">🟢 Salvato</div>
+        <select id="catInput">
+          <option value="">Categoria</option>
+          <option>Spesa</option>
+          <option>Bollette</option>
+          <option>Auto</option>
+          <option>Salute</option>
+          <option>Shopping</option>
+          <option>Tempo libero</option>
+          <option>Ristoranti</option>
+          <option>Hobby</option>
+          <option>Risparmio</option>
+          <option>Altro</option>
+        </select>
 
-    <h1>Budgeting 💰</h1>
-
-    <!-- ORDINAMENTO (solo storico) -->
-    <div class="sortWrapper">
-      <select id="sortSelect" class="sortMenu">
-        <option value="recent">📅 Recenti</option>
-        <option value="az">🔤 Nome A → Z</option>
-        <option value="za">🔤 Nome Z → A</option>
-      </select>
+        <button id="addBtn" class="btn-main">➕ Aggiungi spesa</button>
+      </div>
     </div>
 
-    <!-- FORM BUDGET -->
-    <div class="form">
+    <!-- CARD RIEPILOGO -->
+    <div class="card">
+      <div class="summary">
+        <div class="summaryBox">
+          <div class="summaryLabel">Totale speso</div>
+          <div id="spentValue" class="summaryValue">0 €</div>
+        </div>
+        <div class="summaryBox">
+          <div class="summaryLabel">Rimanente</div>
+          <div id="leftValue" class="summaryValue positive">0 €</div>
+        </div>
+      </div>
 
-      <input id="budgetInput" type="number" placeholder="Budget mensile">
-
-      <select id="monthSelect">
-        <option>Gennaio</option><option>Febbraio</option><option>Marzo</option>
-        <option>Aprile</option><option>Maggio</option><option>Giugno</option>
-        <option>Luglio</option><option>Agosto</option><option>Settembre</option>
-        <option>Ottobre</option><option>Novembre</option><option>Dicembre</option>
-      </select>
-
-      <input id="yearInput" type="number" placeholder="Anno">
-
-      <input id="descInput" placeholder="Descrizione spesa">
-      <input id="amountInput" type="number" placeholder="Importo">
-
-      <select id="catInput">
-        <option>Spesa</option>
-        <option>Bollette</option>
-        <option>Auto</option>
-        <option>Salute</option>
-        <option>Shopping</option>
-        <option>Tempo libero</option>
-        <option>Ristoranti</option>
-        <option>Hobby</option>
-        <option>Risparmio</option>
-        <option>Investimenti</option>
-      </select>
-
-      <button id="addBtn" class="btn-crazy">➕ Aggiungi spesa</button>
-
+      <div class="barWrapper">
+        <div class="barLabel">Percentuale budget usata</div>
+        <div class="barOuter">
+          <div id="barInner" class="barInner"></div>
+        </div>
+        <div id="percentText" class="percentText">0% del budget usato</div>
+      </div>
     </div>
 
+    <!-- STORICO -->
     <h2>Storico spese</h2>
     <div id="list"></div>
-
   </div>
 
-  <script src="app.js"></script>
+  <script>
+    const budgetInput = document.getElementById("budgetInput");
+    const descInput = document.getElementById("descInput");
+    const amountInput = document.getElementById("amountInput");
+    const catInput = document.getElementById("catInput");
+    const addBtn = document.getElementById("addBtn");
+
+    const spentValue = document.getElementById("spentValue");
+    const leftValue = document.getElementById("leftValue");
+    const barInner = document.getElementById("barInner");
+    const percentText = document.getElementById("percentText");
+    const list = document.getElementById("list");
+
+    let state = {
+      budget: 0,
+      entries: []
+    };
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem("budgetingState");
+        if (!raw) return;
+        state = JSON.parse(raw);
+      } catch {
+        state = { budget: 0, entries: [] };
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem("budgetingState", JSON.stringify(state));
+    }
+
+    function render() {
+      // input budget
+      if (state.budget > 0) {
+        budgetInput.value = state.budget;
+      }
+
+      // calcoli
+      const spent = state.entries.reduce((sum, e) => sum + e.amount, 0);
+      const left = state.budget - spent;
+      const percent = state.budget > 0 ? Math.min(100, Math.round((spent / state.budget) * 100)) : 0;
+
+      spentValue.textContent = spent.toFixed(2) + " €";
+      leftValue.textContent = left.toFixed(2) + " €";
+      leftValue.classList.toggle("negative", left < 0);
+      leftValue.classList.toggle("positive", left >= 0);
+
+      barInner.style.width = percent + "%";
+      percentText.textContent = percent + "% del budget usato";
+
+      // lista spese
+      list.innerHTML = "";
+      if (state.entries.length === 0) {
+        const div = document.createElement("div");
+        div.className = "empty";
+        div.textContent = "Nessuna spesa ancora. Inizia ad aggiungerne una.";
+        list.appendChild(div);
+        return;
+      }
+
+      state.entries.forEach(e => {
+        const div = document.createElement("div");
+        div.className = "entry";
+
+        div.innerHTML = `
+          <div class="entryTop">
+            <div class="entryDesc">${escapeHtml(e.desc)}</div>
+            <div class="entryAmount">-${e.amount.toFixed(2)} €</div>
+          </div>
+          <div class="entryMeta">
+            ${e.cat ? "📂 " + escapeHtml(e.cat) : ""} · ${e.date}
+          </div>
+        `;
+
+        list.appendChild(div);
+      });
+    }
+
+    function escapeHtml(str) {
+      return (str || "").replace(/[&<>"']/g, c => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[c]));
+    }
+
+    function addEntry() {
+      const budgetVal = parseFloat(budgetInput.value);
+      if (!isNaN(budgetVal) && budgetVal >= 0) {
+        state.budget = budgetVal;
+      }
+
+      const desc = descInput.value.trim();
+      const amount = parseFloat(amountInput.value);
+      const cat = catInput.value;
+
+      if (!desc || isNaN(amount) || amount <= 0) return;
+
+      const now = new Date();
+      const dateStr = now.toLocaleDateString("it-IT", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+      });
+
+      state.entries.push({
+        desc,
+        amount,
+        cat,
+        date: dateStr
+      });
+
+      descInput.value = "";
+      amountInput.value = "";
+      catInput.value = "";
+
+      saveState();
+      render();
+    }
+
+    addBtn.onclick = addEntry;
+    budgetInput.onchange = () => {
+      const val = parseFloat(budgetInput.value);
+      if (!isNaN(val) && val >= 0) {
+        state.budget = val;
+        saveState();
+        render();
+      }
+    };
+
+    loadState();
+    render();
+  </script>
 </body>
 </html>
