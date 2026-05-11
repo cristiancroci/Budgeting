@@ -18,10 +18,12 @@
 
 <div class="card">
 <input id="budgetInput" type="number" placeholder="Budget mensile (€)">
+
 <div style="display:flex;gap:8px;margin-bottom:10px;">
 <input id="extraInput" type="number" placeholder="Entrata extra (€)" style="flex:1;">
-<button class="btn-small" id="addExtraBtn">➕ Entrata</button>
+<button class="btn-extra" id="addExtraBtn">➕ Entrata</button>
 </div>
+
 <input id="descInput" placeholder="Descrizione spesa">
 <input id="amountInput" type="number" placeholder="Importo (€)">
 <select id="catInput">
@@ -30,11 +32,12 @@
 <option>Desideri</option>
 <option>Risparmio</option>
 </select>
-<button class="btn" id="addBtn">➕ Aggiungi spesa</button>
+
+<button class="btn-add" id="addBtn">➕ Aggiungi spesa</button>
 
 <div class="btn-row">
-<button class="btn-small" id="exportBtn">⬇️ Esporta</button>
-<button class="btn-small" id="importBtn">⬆️ Importa</button>
+<button class="btn-export" id="exportBtn">⬇️ Esporta</button>
+<button class="btn-import" id="importBtn">⬆️ Importa</button>
 </div>
 
 <input type="file" id="fileInput" accept="application/json">
