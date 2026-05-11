@@ -10,7 +10,7 @@
 body{
     margin:0;
     padding:0;
-    background:radial-gradient(circle at top,#070135, #0000ff);
+    background:radial-gradient(circle at top,#e0e0e0, #adacac);
     font-family:system-ui,sans-serif;
     color:var(--text);
     display:flex;
