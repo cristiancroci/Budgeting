@@ -162,7 +162,7 @@ function render(){
    let p=t?Math.min(100,e.amount/t*100):0;
 
    let d=document.createElement("div");
-   d.className="entry";
+   d.className = "entry entry-" + e.cat;
    d.dataset.index=i;
 
    d.innerHTML=`
