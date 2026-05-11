@@ -26,53 +26,60 @@ input, select {
     border: 1px solid #ccc;
 }
 
-/* -------------------------
-   BOTTONI PERSONALIZZATI
---------------------------*/
+/* ---------------------------------------------------
+   BOTTONI ORIGINALI (ripristinati)
+----------------------------------------------------*/
 
-/* ➕ Aggiungi spesa — colore originale */
+/* Aggiungi spesa — stile originale luminoso */
 .btn-add {
     width: 100%;
     padding: 14px;
-    background: linear-gradient(135deg, #ff7b00, #ffb347);
+    background: linear-gradient(135deg, #ff8a00, #ffca28);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 18px;
     cursor: pointer;
-    transition: 0.3s;
+    box-shadow: 0 4px 10px rgba(255,140,0,0.4);
+    transition: 0.2s;
 }
-.btn-add:hover {
-    filter: brightness(1.15);
+.btn-add:active {
+    transform: scale(0.97);
 }
 
-/* ➕ Entrata — colore originale */
+/* Entrata extra — stile originale blu luminoso */
 .btn-extra {
     padding: 10px;
-    background: linear-gradient(135deg, #0066ff, #33a1ff);
+    background: linear-gradient(135deg, #2196f3, #64b5f6);
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 10px;
     font-size: 16px;
     cursor: pointer;
-    transition: 0.3s;
+    box-shadow: 0 4px 10px rgba(33,150,243,0.4);
+    transition: 0.2s;
 }
-.btn-extra:hover {
-    filter: brightness(1.15);
+.btn-extra:active {
+    transform: scale(0.97);
 }
 
-/* ⬇️ Esporta — ROSSO BORDEAUX CANGIANTE */
+/* ---------------------------------------------------
+   BOTTONI SPECIALI (solo questi due cambiano)
+----------------------------------------------------*/
+
+/* Esporta — rosso bordeaux cangiante */
 .btn-export {
     flex: 1;
     padding: 10px;
-    background: linear-gradient(135deg, #5a0a0a, #8b1e1e, #b83232);
+    background: linear-gradient(135deg, #4a0000, #7a0f0f, #b81c1c);
     background-size: 200% 200%;
     animation: bordeaux 4s ease infinite;
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 10px;
     font-size: 16px;
     cursor: pointer;
+    box-shadow: 0 4px 10px rgba(120,0,0,0.4);
 }
 @keyframes bordeaux {
     0% { background-position: 0% 50%; }
@@ -80,18 +87,19 @@ input, select {
     100% { background-position: 0% 50%; }
 }
 
-/* ⬆️ Importa — VERDE CANGIANTE */
+/* Importa — verde cangiante */
 .btn-import {
     flex: 1;
     padding: 10px;
-    background: linear-gradient(135deg, #0a5a0a, #1e8b1e, #32b832);
+    background: linear-gradient(135deg, #0a4f0a, #1f8f1f, #32c832);
     background-size: 200% 200%;
     animation: greenGlow 4s ease infinite;
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 10px;
     font-size: 16px;
     cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,120,0,0.4);
 }
 @keyframes greenGlow {
     0% { background-position: 0% 50%; }
@@ -104,9 +112,9 @@ input, select {
     gap: 10px;
 }
 
-/* -------------------------
-   BARRA 50/30/20
---------------------------*/
+/* ---------------------------------------------------
+   BARRA 50/30/20 — luminosa come prima
+----------------------------------------------------*/
 
 .barOuter {
     width: 100%;
@@ -119,20 +127,22 @@ input, select {
 .barInner {
     height: 100%;
     border-radius: 6px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.3);
 }
 
-.barNec { background: #e53935; }
-.barDes { background: #fb8c00; }
-.barRis { background: #43a047; }
+/* Colori originali */
+.barNec { background: #e53935; box-shadow: 0 0 10px rgba(229,57,53,0.7); }
+.barDes { background: #fb8c00; box-shadow: 0 0 10px rgba(251,140,0,0.7); }
+.barRis { background: #43a047; box-shadow: 0 0 10px rgba(67,160,71,0.7); }
 
 .percentText {
     font-size: 14px;
     margin-top: 4px;
 }
 
-/* -------------------------
-   LISTA SPESE
---------------------------*/
+/* ---------------------------------------------------
+   LISTA SPESE — ripristinata
+----------------------------------------------------*/
 
 .entry {
     background: white;
