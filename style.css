@@ -1,5 +1,5 @@
 :root{
-    --bg:black;
+    --bg:#f5f7fb;
     --card:#fff;
     --text:#222;
     --nec:#ff3b3b;
@@ -10,7 +10,7 @@
 body{
     margin:0;
     padding:0;
-    background:radial-gradient(circle at top,#fff,#e3e7ff);
+    background:radial-gradient(circle at top,#070135, #0000ff);
     font-family:system-ui,sans-serif;
     color:var(--text);
     display:flex;
