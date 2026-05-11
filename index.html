@@ -122,6 +122,11 @@ function render(){
    if(e.cat==="Risparmio") ris+=e.amount;
  });
 
+ // Totali disponibili
+ let maxNec = (t * 0.50).toFixed(2);
+ let maxDes = (t * 0.30).toFixed(2);
+ let maxRis = (t * 0.20).toFixed(2);
+
  let pN=t?Math.min(100,nec/(t*0.5)*100):0;
  let pD=t?Math.min(100,des/(t*0.3)*100):0;
  let pR=t?Math.min(100,ris/(t*0.2)*100):0;
@@ -130,14 +135,14 @@ function render(){
  $("barDes").style.width=pD+"%";
  $("barRis").style.width=pR+"%";
 
- $("textNec").textContent=
-   pN.toFixed(0)+"% — "+nec.toFixed(2)+"€ / "+(t*0.50).toFixed(2)+"€";
+ $("textNec").textContent =
+   pN.toFixed(0)+"% — Speso: "+nec.toFixed(2)+"€ — Totale disponibile: "+maxNec+"€";
 
- $("textDes").textContent=
-   pD.toFixed(0)+"% — "+des.toFixed(2)+"€ / "+(t*0.30).toFixed(2)+"€";
+ $("textDes").textContent =
+   pD.toFixed(0)+"% — Speso: "+des.toFixed(2)+"€ — Totale disponibile: "+maxDes+"€";
 
- $("textRis").textContent=
-   pR.toFixed(0)+"% — "+ris.toFixed(2)+"€ / "+(t*0.20).toFixed(2)+"€";
+ $("textRis").textContent =
+   pR.toFixed(0)+"% — Speso: "+ris.toFixed(2)+"€ — Totale disponibile: "+maxRis+"€";
 
  let L=$("list");
  L.innerHTML="";
