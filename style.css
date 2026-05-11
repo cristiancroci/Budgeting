@@ -282,11 +282,11 @@ input:focus,select:focus{
     display: inline-block;
     padding: 10px 22px;
     border-radius: 14px;
-    background: linear gradient(120deg,#ff6b6b,#f7b733,#00c9a7,#6a5acd);
+    background: black;
     backdrop-filter: blur(6px);
     border: 2px solid rgba(106,90,205,0.35);
     box-shadow: 0 0 18px rgba(106,90,205,0.35);
-animation: crazyColor 2s infinite linear, crazyGlow 1s infinite linear;
+    animation: crazyColor 2s infinite linear, crazyGlow                      1s infinite linear;
 }
 
 /* Animazione cangiante morbida */
