@@ -21,7 +21,7 @@
 
 <div style="display:flex;gap:8px;margin-bottom:10px;">
 <input id="extraInput" type="number" placeholder="Entrata extra (€)" style="flex:1;">
-<button class="btn-extra" id="addExtraBtn">➕ Entrata</button>
+<button class="btn-small" id="addExtraBtn">➕ Entrata</button>
 </div>
 
 <input id="descInput" placeholder="Descrizione spesa">
@@ -33,7 +33,7 @@
 <option>Risparmio</option>
 </select>
 
-<button class="btn-add" id="addBtn">➕ Aggiungi spesa</button>
+<button class="btn" id="addBtn">➕ Aggiungi spesa</button>
 
 <div class="btn-row">
 <button class="btn-export" id="exportBtn">⬇️ Esporta</button>
@@ -125,7 +125,6 @@ function render(){
    if(e.cat==="Risparmio") ris+=e.amount;
  });
 
- // Totali disponibili
  let maxNec = (t * 0.50);
  let maxDes = (t * 0.30);
  let maxRis = (t * 0.20);
