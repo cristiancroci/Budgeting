@@ -123,9 +123,13 @@ function render(){
  });
 
  // Totali disponibili
- let maxNec = (t * 0.50).toFixed(2);
- let maxDes = (t * 0.30).toFixed(2);
- let maxRis = (t * 0.20).toFixed(2);
+ let maxNec = (t * 0.50);
+ let maxDes = (t * 0.30);
+ let maxRis = (t * 0.20);
+
+ let dispNec = (maxNec - nec).toFixed(2);
+ let dispDes = (maxDes - des).toFixed(2);
+ let dispRis = (maxRis - ris).toFixed(2);
 
  let pN=t?Math.min(100,nec/(t*0.5)*100):0;
  let pD=t?Math.min(100,des/(t*0.3)*100):0;
@@ -136,13 +140,13 @@ function render(){
  $("barRis").style.width=pR+"%";
 
  $("textNec").textContent =
-   pN.toFixed(0)+"% — Speso: "+nec.toFixed(2)+"€ — Totale disponibile: "+maxNec+"€";
+   `${nec.toFixed(2)}€ di ${maxNec.toFixed(2)}€ totali = disponibili ${dispNec}€`;
 
  $("textDes").textContent =
-   pD.toFixed(0)+"% — Speso: "+des.toFixed(2)+"€ — Totale disponibile: "+maxDes+"€";
+   `${des.toFixed(2)}€ di ${maxDes.toFixed(2)}€ totali = disponibili ${dispDes}€`;
 
  $("textRis").textContent =
-   pR.toFixed(0)+"% — Speso: "+ris.toFixed(2)+"€ — Totale disponibile: "+maxRis+"€";
+   `${ris.toFixed(2)}€ di ${maxRis.toFixed(2)}€ totali = disponibili ${dispRis}€`;
 
  let L=$("list");
  L.innerHTML="";
