@@ -286,7 +286,7 @@ input:focus,select:focus{
     backdrop-filter: blur(6px);
     border: 2px solid rgba(106,90,205,0.35);
     box-shadow: 0 0 18px rgba(106,90,205,0.35);
-    animation: titleGlow 6s ease infinite;
+animation: crazyColor 2s infinite linear, crazyGlow 1s infinite linear;
 }
 
 /* Animazione cangiante morbida */
