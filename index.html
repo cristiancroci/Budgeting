@@ -5,20 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Budgeting</title>
 <link rel="stylesheet" href="style.css">
-
-<!-- rebuild 1 -->
-
-<!-- Google API -->
-<script src="https://apis.google.com/js/api.js"></script>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-
 </head>
 
 <body>
 <div class="app">
 
 <h1>Budgeting</h1>
-<div class="subtitle">50/30/20 con calendario mese + salvataggio Drive</div>
+<div class="subtitle">50/30/20 con calendario mese</div>
 
 <label>📅 Mese:</label>
 <input type="month" id="mesePicker">
@@ -41,7 +34,6 @@
 
 <div class="btn-row">
 <button class="btn-small" id="exportBtn">⬇️ Esporta</button>
-<button class="btn-small" id="driveBtn">☁️ Salva su Drive</button>
 <button class="btn-small" id="importBtn">⬆️ Importa</button>
 </div>
 
@@ -75,65 +67,6 @@
 <div id="list"></div>
 
 <script>
-/* ------------------------------
-   CONFIG GOOGLE DRIVE
---------------------------------*/
-const CLIENT_ID = "7759771546-acig3vloggkd4vkln9feiki39c407e00.apps.googleusercontent.com";
-const API_KEY = "AIzaSyC4lH-1BBXzohaq5ahdFDjdJ9amyVxOKMY";
-const SCOPES = "https://www.googleapis.com/auth/drive.file";
-
-let tokenClient;
-
-function initGoogle(){
-  gapi.load("client", async ()=>{
-    await gapi.client.init({apiKey:API_KEY});
-  });
-
-  tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: CLIENT_ID,
-    scope: SCOPES,
-    callback: ""
-  });
-}
-
-window.onload = initGoogle;
-
-/* ------------------------------
-   SALVA SU GOOGLE DRIVE
---------------------------------*/
-async function saveToDrive(){
-  tokenClient.callback = async ()=>{
-    const fileContent = JSON.stringify(state);
-    const file = new Blob([fileContent], {type:"application/json"});
-
-    const metadata = {
-      name: "budget.json",
-      mimeType: "application/json"
-    };
-
-    const form = new FormData();
-    form.append("metadata", new Blob([JSON.stringify(metadata)], {type:"application/json"}));
-    form.append("file", file);
-
-    await fetch(
-      "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
-      {
-        method:"POST",
-        headers:{Authorization:"Bearer "+gapi.client.getToken().access_token},
-        body:form
-      }
-    );
-
-    alert("✔ Salvato su Google Drive (sovrascritto)");
-  };
-
-  if (!gapi.client.getToken()) tokenClient.requestAccessToken();
-  else tokenClient.requestAccessToken({prompt:"none"});
-}
-
-/* ------------------------------
-   STATO APP
---------------------------------*/
 let state={meseCorrente:"",mesi:{}};
 const $=id=>document.getElementById(id);
 
@@ -304,8 +237,6 @@ $("exportBtn").onclick=()=>{
  a.download="budget.json";
  a.click();
 };
-
-$("driveBtn").onclick=saveToDrive;
 
 $("importBtn").onclick=()=>{$("fileInput").click();};
 $("fileInput").onchange=()=>{
