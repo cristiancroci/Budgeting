@@ -200,17 +200,25 @@ input:focus,select:focus{
     align-items:center;
 }
 
-/* ⭐ OPZIONE A — TITOLO CON MINI-RIQUADRO LUMINOSO */
+/* ⭐ TITOLO DELLA VOCE — VERSIONE VISIBILE */
 .entryDesc{
     font-weight:700;
     font-size:1rem;
     padding:6px 12px;
     border-radius:10px;
-    background:rgba(255,255,255,0.08);
-    border:1px solid rgba(255,255,255,0.15);
-    box-shadow:0 0 12px rgba(255,255,255,0.15);
+
+    /* sfondo scuro visibile */
+    background:rgba(0,0,0,0.35);
+
+    /* testo leggibile */
+    color:#ffffff;
+
+    /* bordo e glow */
+    border:1px solid rgba(255,255,255,0.25);
+    box-shadow:0 0 14px rgba(255,255,255,0.25);
+
     display:inline-block;
-    backdrop-filter:blur(4px);
+    backdrop-filter:blur(6px);
 }
 
 .entryAmount{
