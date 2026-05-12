@@ -208,7 +208,7 @@ input:focus,select:focus{
     border-radius:10px;
 
     /* sfondo scuro visibile */
-    background:red;
+    background:linear-gradient(120deg,#ff6b6b,#f7b733,#00c9a7,#6a5acd);
 
     /* testo leggibile */
     color:black;
