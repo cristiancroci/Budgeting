@@ -114,7 +114,6 @@ input:focus,select:focus{
    BOTTONI SPECIALI
 --------------------------*/
 
-/* ⬇️ ESPORTA — ROSSO BORDEAUX CANGIANTE */
 .btn-export{
     padding:8px 14px;
     border-radius:999px;
@@ -129,7 +128,6 @@ input:focus,select:focus{
     box-shadow:0 6px 14px rgba(120,0,0,.25);
 }
 
-/* ⬆️ IMPORTA — VERDE CANGIANTE */
 .btn-import{
     padding:8px 14px;
     border-radius:999px;
@@ -202,7 +200,18 @@ input:focus,select:focus{
     align-items:center;
 }
 
-.entryDesc{font-weight:600}
+/* ⭐ OPZIONE A — TITOLO CON MINI-RIQUADRO LUMINOSO */
+.entryDesc{
+    font-weight:700;
+    font-size:1rem;
+    padding:6px 12px;
+    border-radius:10px;
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.15);
+    box-shadow:0 0 12px rgba(255,255,255,0.15);
+    display:inline-block;
+    backdrop-filter:blur(4px);
+}
 
 .entryAmount{
     font-weight:600;
@@ -276,8 +285,7 @@ input:focus,select:focus{
     border-color: rgba(0, 201, 107, 0.4);
 }
 
-
-/* RIQUADRO LUMINOSO PER IL TITOLO */
+/* RIQUADRO TITOLO APP */
 .titleBox {
     display: inline-block;
     padding: 10px 22px;
@@ -286,14 +294,7 @@ input:focus,select:focus{
     backdrop-filter: blur(6px);
     border: 2px solid rgba(106,90,205,0.35);
     box-shadow: 0 0 18px rgba(106,90,205,0.35);
-    animation: crazyColor 2s infinite linear, crazyGlow                      1s infinite linear;
-}
-
-/* Animazione cangiante morbida */
-@keyframes titleGlow {
-    0% { box-shadow: 0 0 12px rgba(106,90,205,0.35); }
-    50% { box-shadow: 0 0 22px rgba(0,201,107,0.45); }
-    100% { box-shadow: 0 0 12px rgba(106,90,205,0.35); }
+    animation: crazyColor 2s infinite linear, crazyGlow 1s infinite linear;
 }
 
 #fileInput{display:none}
